@@ -31,7 +31,7 @@ function addToDoItem() {
     date: dateElement,
     html: '',
     id: uniqueNumber += 1,
-    isDone: false,
+    isDone: '',
   }
 
   if (items.toDoName) {
@@ -51,15 +51,23 @@ function update() {
   for (const i in toDoStorage) {
 
     if (toDoStorage[i].html) {
-      
+
       if (toDoStorage[i].isDone) {
         let parser = new DOMParser();
         let parsedDocument = parser.parseFromString(toDoStorage[i].html, "text/html");
         parsedDocument.body.firstChild.firstChild.defaultChecked = true;
         parsedDocument.body.firstChild.childNodes[1].classList.add('done-tusk');
         toDoStorage[i].html = parsedDocument.body.firstChild.outerHTML;
+      } else if (!toDoStorage[i].isDone) {
+        let parser = new DOMParser();
+        let parsedDocument = parser.parseFromString(toDoStorage[i].html, "text/html");
+        parsedDocument.body.firstChild.firstChild.defaultChecked = false;
+        parsedDocument.body.firstChild.childNodes[1].classList.remove('done-tusk');
+        toDoStorage[i].html = parsedDocument.body.firstChild.outerHTML;
       }
+
       html += toDoStorage[i].html;
+
     } else {
       let myDiv = document.createElement('div');
       myDiv.classList.add('js-todo-row-with-check');
@@ -114,6 +122,7 @@ function clearStorage() {
 function removeToDo(uniqNum) {
   index = toDoStorage.findIndex(object => object.id === uniqNum)
   console.log(toDoStorage[index].toDoName + ' - deleted');
+  console.log(index);
   toDoStorage.splice(index, 1);
 
   update();
@@ -162,22 +171,27 @@ function moveElemet(array, from, to) {
   array[to] = temp;
 };
 
+function findIndexInArray(uniqNum) {
+  const index = toDoStorage.findIndex(object => object.id === +uniqNum)
+  return index;
+}
+
 
 allCheckbox = document.querySelector('.js-todo-list-4')
   .addEventListener('change', (event) => {
+    let objectUniqNumber = event.target.parentElement.dataset['firstindex'];
+    let index = findIndexInArray(objectUniqNumber);
+
     if (event.target.checked) {
-      toDoStorage[event.target.parentElement.dataset['firstindex'] - 1].isDone = true;
+      toDoStorage[index].isDone = true;
       localStorage.setItem('items', JSON.stringify(toDoStorage));
       update();
 
       // вот это должно двигать в конец
       // toDoStorage.push(toDoStorage.splice(event.target.parentElement.dataset['firstindex'] - 1, 1)[0]);
 
-
-      // event.target.classList.add('done-tusk');
     } else {
-      event.target.nextElementSibling.classList.remove('done-tusk');
-      toDoStorage[event.target.parentElement.dataset['firstindex'] - 1].isDone = false;
+      toDoStorage[index].isDone = false;
       localStorage.setItem('items', JSON.stringify(toDoStorage));
       update();
     };
