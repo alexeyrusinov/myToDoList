@@ -56,15 +56,12 @@ function update() {
         let parser = new DOMParser();
         let parsedDocument = parser.parseFromString(toDoStorage[i].html, "text/html");
         parsedDocument.body.firstChild.firstChild.defaultChecked = true;
-        // console.log(parsedDocument.body.firstChild.childNodes[1]);
         parsedDocument.body.firstChild.childNodes[1].classList.add('done-tusk');
         toDoStorage[i].html = parsedDocument.body.firstChild.outerHTML;
       } else if (!toDoStorage[i].isDone) {
         let parser = new DOMParser();
         let parsedDocument = parser.parseFromString(toDoStorage[i].html, "text/html");
         parsedDocument.body.firstChild.firstChild.defaultChecked = false;
-        // console.log(parsedDocument.body.firstChild.childNodes[1]);
-        console.log(parsedDocument.body.firstChild.childNodes[1].classList);
         parsedDocument.body.firstChild.childNodes[1].classList.remove('done-tusk');
         toDoStorage[i].html = parsedDocument.body.firstChild.outerHTML;
       }
@@ -176,7 +173,6 @@ function moveElemet(array, from, to) {
 
 function findIndexInArray(uniqNum) {
   const index = toDoStorage.findIndex(object => object.id === +uniqNum)
-  console.log(index, uniqNum);
   return index;
 }
 
@@ -188,7 +184,6 @@ allCheckbox = document.querySelector('.js-todo-list-4')
 
     if (event.target.checked) {
       toDoStorage[index].isDone = true;
-      // toDoStorage[objectUniqNumber - 1].isDone = true;
       localStorage.setItem('items', JSON.stringify(toDoStorage));
       update();
 
