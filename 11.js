@@ -51,39 +51,16 @@ function update() {
   for (const i in toDoStorage) {
 
     if (toDoStorage[i].html) {
-      // console.log(typeof toDoStorage[i].html);
-      // console.log(toDoStorage[i].html);
-
+      
       if (toDoStorage[i].isDone) {
-        console.log('true');
         let parser = new DOMParser();
         let parsedDocument = parser.parseFromString(toDoStorage[i].html, "text/html");
         parsedDocument.body.firstChild.firstChild.defaultChecked = true;
         parsedDocument.body.firstChild.childNodes[1].classList.add('done-tusk');
         toDoStorage[i].html = parsedDocument.body.firstChild.outerHTML;
-        // console.log(typeof parsedDocument.body.firstChild.outerHTML);
-        // console.log(parsedDocument.body.firstChild.outerHTML);
       }
-
-        // console.log(parsedDocument.body.firstChild.firstChild.value);
-        // parsedDocument.body.firstChild.firstChild.checked = true;
-
-        // console.log(parsedDocument.body.firstChild.outerHTML);
-
-      // }
-
       html += toDoStorage[i].html;
-
     } else {
-      // toDoStorage[i].html = `
-      // <div class="js-todo-row-with-check" data-firstindex="${toDoStorage[i].id}">
-      //   <input type="checkbox" class="js-checkbox">
-      //   <div>${toDoStorage[i].toDoName}</div>
-      //   <div class="js-date-output">${toDoStorage[i].date.split('-').reverse().join('-')}</div>
-      //   <button data-index="${toDoStorage[i].id}" class="remove-button js-delete-button">Delete</button>
-      // </div>`
-
-
       let myDiv = document.createElement('div');
       myDiv.classList.add('js-todo-row-with-check');
       myDiv.dataset.firstindex = toDoStorage[i].id;
@@ -103,8 +80,7 @@ function update() {
 
       let dateDiv = document.createElement('div');
       dateDiv.classList.add('js-date-output');
-      // console.log(toDoStorage[i].date);
-      // dateDiv.innerHTML = toDoStorage[i].date.split('-').reverse().join('-');
+      dateDiv.innerHTML = toDoStorage[i].date.split('-').reverse().join('-');
       myDiv.appendChild(dateDiv);
 
       let button = document.createElement('button');
@@ -123,10 +99,6 @@ function update() {
 
   whereElenemt.innerHTML = html;
   localStorage.setItem('items', JSON.stringify(toDoStorage));
-
-  // if (allCheckbox) {
-  // addListenerForCheckbox();
-  // }
 }
 
 function clearStorage() {
@@ -180,49 +152,6 @@ document.querySelector('.js-todo-row')
   });
 
 
-// const allCheckbox = document.querySelectorAll('.js-checkbox')
-// const arrayAllCheckbox = Array.from(allCheckbox);;
-
-// arrayAllCheckbox.forEach((item) => {
-//   item.addEventListener('click', (event) => {
-//     console.log(ivent.target);
-//   });
-// })
-
-
-// const allCheckbox = [...document.querySelectorAll('.js-checkbox')];
-
-// allCheckbox.forEach((item) => {
-//   item.addEventListener('change', (event) => {
-//     if (event.target.checked) {
-//       console.log('зачеркиваем таск');
-//       console.log(event.target);
-//       console.log(event.currentTarget);
-//     } else {
-//       console.log('не зачеркиваем тaск');
-//       console.log(event.target);
-//     }
-//   });
-// })
-
-
-// // function addListenerForCheckbox() {
-//   allCheckbox = [...document.querySelectorAll('.js-todo-row-with-check')];
-//   allCheckbox.forEach((item) => {
-//     item.addEventListener('change', (event) => {
-//       if (event.target.checked) {
-//         console.log(event.target);
-//         console.log(event.currentTarget);
-//         event.currentTarget.classList.add('done-tusk');
-//       } else {
-//         console.log(event.target);
-//         console.log(event.currentTarget);
-//         event.currentTarget.classList.remove('done-tusk');
-//       };
-//     });
-//   });
-// // };
-
 function moveElemet(array, from, to) {
   // еще добавить проверку чтобы не двигать элемент если он последний
   let temp = array[from];
@@ -233,28 +162,11 @@ function moveElemet(array, from, to) {
   array[to] = temp;
 };
 
-// let arr = [1, 2, 3, 4]
-// console.log(arr);
-// // console.log(moveElemet(arr, 3, 0));
-// console.log(arr);
-
-// // закидывает в конец массива элемент
-// arr.push(arr.splice(1, 1)[0]);
-// // arr.push(arr.splice(arr.indexOf(2), 1)[0]);
-// console.log(arr);
-
 
 allCheckbox = document.querySelector('.js-todo-list-4')
   .addEventListener('change', (event) => {
     if (event.target.checked) {
-      // console.log(event.target.nextElementSibling.classList.add('done-tusk'));
-      // event.target.nextElementSibling.classList.add('done-tusk');
       toDoStorage[event.target.parentElement.dataset['firstindex'] - 1].isDone = true;
-      // console.log(event.target.parentElement.dataset['firstindex']);
-      // console.log(event.target);
-      // event.target.defaultChecked = true
-      // console.log(event.target);
-      // checked="checked"
       localStorage.setItem('items', JSON.stringify(toDoStorage));
       update();
 
@@ -262,66 +174,13 @@ allCheckbox = document.querySelector('.js-todo-list-4')
       // toDoStorage.push(toDoStorage.splice(event.target.parentElement.dataset['firstindex'] - 1, 1)[0]);
 
 
-      // console.log(event.target.parentElement.outerHTML);
-      // toDoStorage[event.target.parentElement.dataset['firstindex'] - 1].html = event.target.parentElement.outerHTML;
-
-      // console.log(event.currentTarget.dataset['firstindex']);
-
-      // console.log(event.currentTarget);
       // event.target.classList.add('done-tusk');
     } else {
-      // console.log(event);
-      // console.log(event.target.nextElementSibling.classList.remove('done-tusk'));
       event.target.nextElementSibling.classList.remove('done-tusk');
       toDoStorage[event.target.parentElement.dataset['firstindex'] - 1].isDone = false;
       localStorage.setItem('items', JSON.stringify(toDoStorage));
       update();
-      // console.log(event.target.nextElementSibling);
-      // console.log(event.currentTarget);
-      // event.target.classList.remove('done-tusk');
     };
   });
 
 
-  // const myDiv = document.createElement('div');
-  // myDiv.classList.add('js-todo-row-with-check');
-  // myDiv.dataset.firstindex = toDoStorage[i].id;
-
-  // console.log(myDiv);
-
-//   <div class="js-todo-row-with-check" data-firstindex="${toDoStorage[i].id}"> +
-//   <input type="checkbox" class="js-checkbox">
-//   <div>${toDoStorage[i].toDoName}</div>
-//   <div class="js-date-output">${toDoStorage[i].date.split('-').reverse().join('-')}</div>
-//   <button data-index="${toDoStorage[i].id}" class="remove-button js-delete-button">Delete</button>
-// </div>`
-
-// const myDiv = document.createElement('div');
-// myDiv.classList.add('js-todo-row-with-check');
-// myDiv.dataset.firstindex = 1;
-
-// const checkbox = document.createElement('input');
-// checkbox.type = "checkbox";
-// checkbox.classList.add('js-checkbox')
-
-// myDiv.appendChild(checkbox);
-
-// const nameDiv =  document.createElement('div');
-// nameDiv.classList.add('js-nameDiv');
-
-// myDiv.appendChild(nameDiv);
-
-// const dateDiv = document.createElement('div');
-// myDiv.appendChild(dateDiv);
-
-// const button = document.createElement('button');
-// button.innerHTML = 'Delete';
-// button.classList.add('remove-button');
-// button.classList.add('js-delete-button');
-// button.dataset.index = 1;
-
-// myDiv.appendChild(button);
-
-// document.querySelector('.js-todo-list-4').appendChild(myDiv);
-
-// console.log(myDiv);
