@@ -36,6 +36,9 @@ function addToDoItem() {
 
   if (items.toDoName) {
     toDoStorage.push(items);
+    let objectUniqNumber = items.id;
+    let index = findIndexInArray(toDoStorage, objectUniqNumber);
+    move(index, true);
   } else {
     return;
   }
@@ -120,9 +123,10 @@ function clearStorage() {
 }
 
 function removeToDo(uniqNum) {
+  // ----------------------- сюда добавить функцию findIndexInArray
   index = toDoStorage.findIndex(object => object.id === uniqNum)
   console.log(toDoStorage[index].toDoName + ' - deleted');
-  console.log(index);
+
   toDoStorage.splice(index, 1);
 
   update();
@@ -161,38 +165,66 @@ document.querySelector('.js-todo-row')
   });
 
 
-function moveElemet(array, from, to) {
-  // еще добавить проверку чтобы не двигать элемент если он последний
-  let temp = array[from];
-  let i;
-  for (i = from; i >= to; i--) {
-    array[i] = array[i - 1];
+function moveElementInArray(arr, oldIndex, newIndex) {
+  if (newIndex >= arr.length) {
+    let i = newIndex - arr.length + 1;
+    while (i--) {
+      arr.push(undefined);
+    }
   }
-  array[to] = temp;
+  arr.splice(newIndex, 0, arr.splice(oldIndex, 1)[0]);
+  return arr;
 };
 
-function findIndexInArray(uniqNum) {
-  const index = toDoStorage.findIndex(object => object.id === +uniqNum)
+
+function move(index, flag) {
+  const indexDoneTask = [].sort();
+  const indexNotDoneTask = [].sort();
+
+  toDoStorage.forEach((el, i) => {
+    if (el.isDone === true)
+    indexDoneTask.push(i);
+  })
+  toDoStorage.forEach((el, ii) => {
+    if (el.isDone === false || el.isDone === '')
+    indexNotDoneTask.push(ii);
+  })
+
+  let to = toDoStorage.length;
+
+  if (indexDoneTask.length === 0) {
+    to = to - 1;
+  } else if (flag === true) {
+    to = to - indexDoneTask.length - 1;
+  } else if (indexDoneTask) {
+    to = to - indexDoneTask.length;
+  }
+  moveElementInArray(toDoStorage, index, to);
+
+};
+
+
+function findIndexInArray(array, uniqNum) {
+  const index = array.findIndex(object => object.id === uniqNum)
   return index;
 }
 
 
 allCheckbox = document.querySelector('.js-todo-list-4')
   .addEventListener('change', (event) => {
-    let objectUniqNumber = event.target.parentElement.dataset['firstindex'];
-    let index = findIndexInArray(objectUniqNumber);
+    let objectUniqNumber = Number(event.target.parentElement.dataset['firstindex']);
+    let index = findIndexInArray(toDoStorage, objectUniqNumber);
 
     if (event.target.checked) {
       toDoStorage[index].isDone = true;
       localStorage.setItem('items', JSON.stringify(toDoStorage));
+      move(index);
       update();
-
-      // вот это должно двигать в конец
-      // toDoStorage.push(toDoStorage.splice(event.target.parentElement.dataset['firstindex'] - 1, 1)[0]);
 
     } else {
       toDoStorage[index].isDone = false;
-      localStorage.setItem('items', JSON.stringify(toDoStorage));
+      localStorage.setItem('items', JSON.stringify(toDoStorage))
+      move(index, true);
       update();
     };
   });
