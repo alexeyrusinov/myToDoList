@@ -8,6 +8,7 @@ if (todoItems !== null) {
   todoItems.forEach(object => toDoStorage.push(object))
 }
 
+
 function getMaxid() {
   let maxValue = 0;
 
@@ -22,6 +23,7 @@ function getMaxid() {
 let uniqueNumber = getMaxid();
 
 update();
+
 
 function addToDoItem() {
   let nameElemet = document.querySelector('.js-fourth-practice-input').value;
@@ -46,6 +48,7 @@ function addToDoItem() {
   update();
   resetForm();
 }
+
 
 function update() {
   const whereElenemt = document.querySelector('.js-todo-list-4');
@@ -83,7 +86,7 @@ function update() {
 
       myDiv.appendChild(checkbox);
 
-      let nameDiv =  document.createElement('div');
+      let nameDiv = document.createElement('div');
       nameDiv.classList.add('js-nameDiv');
       nameDiv.innerHTML = toDoStorage[i].toDoName;
 
@@ -112,6 +115,7 @@ function update() {
   localStorage.setItem('items', JSON.stringify(toDoStorage));
 }
 
+
 function clearStorage() {
   localStorage.removeItem('items');
   localStorage.clear;
@@ -122,15 +126,22 @@ function clearStorage() {
   resetForm();
 }
 
+
+function findIndexInArray(array, uniqNum) {
+  const index = array.findIndex(object => object.id === uniqNum)
+  return index;
+}
+
+
 function removeToDo(uniqNum) {
-  // ----------------------- сюда добавить функцию findIndexInArray
-  index = toDoStorage.findIndex(object => object.id === uniqNum)
+  index = findIndexInArray(toDoStorage, uniqNum)
   console.log(toDoStorage[index].toDoName + ' - deleted');
 
   toDoStorage.splice(index, 1);
 
   update();
 }
+
 
 function resetForm() {
   document.querySelector('.js-fourth-practice-input').value = '';
@@ -144,6 +155,7 @@ function addToDoItemEnter(event) {
     resetForm();
   }
 }
+
 
 document.querySelector('.js-todo-list-4')
   .addEventListener("click", (event) => {
@@ -183,11 +195,11 @@ function move(index, flag) {
 
   toDoStorage.forEach((el, i) => {
     if (el.isDone === true)
-    indexDoneTask.push(i);
+      indexDoneTask.push(i);
   })
   toDoStorage.forEach((el, ii) => {
     if (el.isDone === false || el.isDone === '')
-    indexNotDoneTask.push(ii);
+      indexNotDoneTask.push(ii);
   })
 
   let to = toDoStorage.length;
@@ -200,14 +212,7 @@ function move(index, flag) {
     to = to - indexDoneTask.length;
   }
   moveElementInArray(toDoStorage, index, to);
-
 };
-
-
-function findIndexInArray(array, uniqNum) {
-  const index = array.findIndex(object => object.id === uniqNum)
-  return index;
-}
 
 
 allCheckbox = document.querySelector('.js-todo-list-4')
@@ -228,5 +233,3 @@ allCheckbox = document.querySelector('.js-todo-list-4')
       update();
     };
   });
-
-
