@@ -4,9 +4,9 @@ let toDoStorage = [];
 let allCheckbox;
 
 // закидываем из памяти в
-if (todoItems !== null) {
+if (todoItems) {
   todoItems.forEach(object => toDoStorage.push(object))
-}
+};
 
 
 function getMaxid() {
@@ -18,7 +18,7 @@ function getMaxid() {
     }
   }
   return maxValue;
-}
+};
 
 let uniqueNumber = getMaxid();
 
@@ -34,7 +34,7 @@ function addToDoItem() {
     html: '',
     id: uniqueNumber += 1,
     isDone: '',
-  }
+  };
 
   if (items.toDoName) {
     toDoStorage.push(items);
@@ -44,10 +44,9 @@ function addToDoItem() {
   } else {
     return;
   }
-
   update();
   resetForm();
-}
+};
 
 
 function update() {
