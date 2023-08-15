@@ -44,7 +44,8 @@ function updateMultipleList() {
   if (multipleTodoLists) {
     for (let index = 0; index < multipleTodoLists.length; index++) {
       const item = multipleTodoLists[index];
-      if (item.prime == true) {
+      if (item.prime === true && item.selected === true) {
+        inboxButton.classList.add('selected-project');
         continue;
       }
       if (item.name) {
@@ -65,7 +66,7 @@ function updateMultipleList() {
 
 updateMultipleList(); // при перезагрузке стр подгрузить проеты
 selectProject(); // вешаю событие после перезагрузки стр
-paintToGreeInboxButton();
+// paintToGreeInboxButton();
 
 
 
@@ -81,7 +82,6 @@ function addProject() {
     return;
   } else {
     counterProjects += 1;
-    console.log('dsgjkyztncz');
     removeSelectProject();
     multipleTodoLists.push({
       name: `${userInput}`,
@@ -131,14 +131,14 @@ function selectProject() {
       }
       event.target.classList.add('selected-project')
       multipleTodoLists.forEach(x => x.selected = false);
-      
+
       const index = multipleTodoLists.findIndex(object => object.id == event.target.dataset['id'])
       multipleTodoLists[index]['selected'] = true;
     })
   })
   toDoStorage = getArrayTasksFromMultipleProject() || [];
 
-  inboxButton.classList.remove('selected-project');
+  // inboxButton.classList.remove('selected-project');
   update();
 }
 
@@ -393,7 +393,7 @@ allCheckbox = document.querySelector('.js-todo-list-4')
 
 
 inboxButton.addEventListener('click', () => {
-  removeSelectProject();
+  // removeSelectProject();
   const index = multipleTodoLists.findIndex(element => element.prime === true)
   multipleTodoLists[index].selected = true;
   localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
