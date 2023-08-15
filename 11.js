@@ -32,12 +32,12 @@ function getArrayTasksFromMultipleProject() {
 }
 
 
-function paintToGreeInboxButton() {
-  const result = multipleTodoLists.find(element => element.prime === true && element.selected === true);
-  if (result) {
-    inboxButton.classList.add('selected-project');
-  }
-}
+// function paintToGreeInboxButton() {
+//   const result = multipleTodoLists.find(element => element.prime === true && element.selected === true);
+//   if (result) {
+//     inboxButton.classList.add('selected-project');
+//   }
+// }
 
 
 function updateMultipleList() {
@@ -281,7 +281,7 @@ function clearStorage() {
   }});
   addZeroProject()
   counterProjects = 0;
-  paintToGreeInboxButton();
+  // paintToGreeInboxButton();
   inboxButton.dataset.id = 0;
 };
 
