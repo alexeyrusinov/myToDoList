@@ -1,3 +1,5 @@
+// после добавления пустого проекта исправить покраску инбокс баттон
+
 let multipleTodoLists = JSON.parse(localStorage.getItem('multipleTodoLists')) || [];
 const divMultipleTodoLists = document.querySelector('.js-multiple-todo-lists');
 const inboxButton = document.querySelector('.js-inbox');
@@ -25,7 +27,7 @@ addZeroProject();
 function getArrayTasksFromMultipleProject() {
   const id = multipleTodoLists.findIndex(element => element.selected === true);
   if (id !== -1) {
-    multipleTodoLists[id].tasks
+    return multipleTodoLists[id].tasks
   }
 }
 
@@ -68,7 +70,6 @@ paintToGreeInboxButton();
 
 
 function addProject() {
-  counterProjects += 1;
   // addZeroProject();
   if (multipleTodoLists.length >= 5) {
     alert('max 4 project');
@@ -79,6 +80,8 @@ function addProject() {
     alert('поле не может быть пустым');
     return;
   } else {
+    counterProjects += 1;
+    console.log('dsgjkyztncz');
     removeSelectProject();
     multipleTodoLists.push({
       name: `${userInput}`,
