@@ -1,37 +1,36 @@
 let multipleTodoLists = JSON.parse(localStorage.getItem('multipleTodoLists')) || [];
 const divMultipleTodoLists = document.querySelector('.js-multiple-todo-lists');
-let selectedProject;
 const inboxButton = document.querySelector('.js-inbox');
-// let tasksForProject = [];
-// const todoItems = JSON.parse(localStorage.getItem('items'));
-// let toDoStorage = JSON.parse(localStorage.getItem('items')) || [];
 let toDoStorage = getArrayTasksFromMultipleProject() || [];
-// let toDoStorage = [];
 let allCheckbox;
-let counterProjects = -1;
+// let counterProjects = 0;
+let counterProjects = getMaxid(multipleTodoLists);
 
 
 // добавление нулевого проета с проверкой
 function addZeroProject() {
+  inboxButton.dataset.id = 0; // при каждой перезагрузке добавляю
   let zeroTask = multipleTodoLists.findIndex(object => object.prime === true)
   if (zeroTask == -1) {
-    multipleTodoLists.push({ prime: true, tasks: [], selected: true })
+    multipleTodoLists.push({ prime: true, tasks: [], id: 0, selected: true,})
     localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
+    inboxButton.dataset.id = 0;
+    counterProjects += 1;
   }
 }
 
-
-// paintToGreeInboxButton();
 addZeroProject();
 
 
 function getArrayTasksFromMultipleProject() {
-  const result = multipleTodoLists.findIndex(element => element.selected === true);
-  return multipleTodoLists[result].tasks;
+  const id = multipleTodoLists.findIndex(element => element.selected === true);
+  if (id !== -1) {
+    multipleTodoLists[id].tasks
+  }
 }
 
 
-function paintToGreeInboxButton () {
+function paintToGreeInboxButton() {
   const result = multipleTodoLists.find(element => element.prime === true && element.selected === true);
   if (result) {
     inboxButton.classList.add('selected-project');
@@ -48,12 +47,12 @@ function updateMultipleList() {
       }
       if (item.name) {
         let button = document.createElement('button');
+        button.dataset.id = item.id;
         button.innerText = item.name;
         button.classList.add(`js-multiple-list`)
         button.classList.add(`${item.name}`)
         if (item.selected) {
           button.classList.add('selected-project');
-          selectedProject = button; // подгружаем выбраный проект в переменную
         }
         divMultipleTodoLists.prepend(button);
       }
@@ -64,10 +63,12 @@ function updateMultipleList() {
 
 updateMultipleList(); // при перезагрузке стр подгрузить проеты
 selectProject(); // вешаю событие после перезагрузки стр
-paintToGreeInboxButton ();
+paintToGreeInboxButton();
+
 
 
 function addProject() {
+  counterProjects += 1;
   // addZeroProject();
   if (multipleTodoLists.length >= 5) {
     alert('max 4 project');
@@ -76,27 +77,23 @@ function addProject() {
   const userInput = prompt('Project name: ');
   if (!userInput || userInput === ' ') {
     alert('поле не может быть пустым');
-    // addProject();
+    return;
   } else {
     removeSelectProject();
     multipleTodoLists.push({
       name: `${userInput}`,
-      tasks: []
+      tasks: [],
+      id: counterProjects,
     })
-
     let button = document.createElement('button');
-
+    button.dataset.id = counterProjects;
     button.innerText = userInput;
     button.classList.add(`js-multiple-list`)
     button.classList.add('selected-project')
-    button.dataset.index = counterProjects += 1;
     divMultipleTodoLists.prepend(button);
-
     multipleTodoLists.forEach(x => x.selected = false);
     const index = multipleTodoLists.findIndex(object => object.name === userInput)
     multipleTodoLists[index]['selected'] = true;
-
-    selectedProject = button;
     toDoStorage = getArrayTasksFromMultipleProject() || [];
     update();
   }
@@ -110,25 +107,17 @@ document.querySelector('.add-project')
   });
 
 
-divMultipleTodoLists.addEventListener('click', () => {
+divMultipleTodoLists.addEventListener('click', (event) => {
+  // if (event.target.classList.contains('add-project')) {
+  //   return;
+  // }
   selectProject();
   localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
 })
 
 
-// это закидыввает массив с тасками в обьект по ключу
-function addTaskToObject() {
-  const indexMultiple = multipleTodoLists.findIndex(object => object.selected === true);
-  if (indexMultiple !== -1) {
-    // multipleTodoLists[indexMultiple]['tasks'] = tasksForProject;
-
-    localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
-  }
-}
-
-
 function selectProject() {
-  const allMultipleButtons = document.querySelectorAll('.js-multiple-list')
+  const allMultipleButtons = document.querySelectorAll('.js-multiple-list');
 
   allMultipleButtons.forEach((item) => {
     item.addEventListener('click', (event) => {
@@ -138,10 +127,9 @@ function selectProject() {
         }
       }
       event.target.classList.add('selected-project')
-      selectedProject = event.target;
-
       multipleTodoLists.forEach(x => x.selected = false);
-      const index = multipleTodoLists.findIndex(object => object.name === event.target.innerText)
+      
+      const index = multipleTodoLists.findIndex(object => object.id == event.target.dataset['id'])
       multipleTodoLists[index]['selected'] = true;
     })
   })
@@ -156,21 +144,13 @@ function removeSelectProject() {
 
   allMultipleButtons.forEach((item) => {
     item.classList.remove('selected-project')
-    // event.target.classList.add('selected-project')
-    selectedProject = '';
-
-    multipleTodoLists.forEach(x => x.selected = false);
-    // const index = multipleTodoLists.findIndex(object => object.name === event.target.innerText)
-    // multipleTodoLists[index]['selected'] = false;
-    localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
   })
+
+  multipleTodoLists.forEach(x => x.selected = false);
+
+  localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
 }
 
-
-// закидываем из памяти в
-// if (todoItems) {
-//   todoItems.forEach(object => toDoStorage.push(object))
-// };
 
 function getMaxid(array) {
   let maxValue = 0;
@@ -186,13 +166,13 @@ function getMaxid(array) {
 
 let uniqueNumber = getMaxid(toDoStorage);
 
-
 update();
 
 
 function addTask() {
   let nameElemet = document.querySelector('.js-fourth-practice-input').value;
   let dateElement = document.getElementById('js-date').value;
+  const projectIndex = multipleTodoLists.findIndex(element => element.selected === true);
   let items = {
     toDoName: nameElemet,
     date: dateElement,
@@ -201,32 +181,18 @@ function addTask() {
     isDone: '',
   };
 
-  const projectIndex = multipleTodoLists.findIndex(element => element.selected === true);
-
   if (items.toDoName) {
     toDoStorage.push(items);
-
     multipleTodoLists[projectIndex]['tasks'] = toDoStorage
-    // if (selectedProject) {
-    // indexButtonAtAtArray = selectedProject.dataset['index'];
-    // multipleTodoLists[indexButtonAtAtArray]['tasks'] = toDoStorage;
-    // }
     let objectUniqNumber = items.id;
     let index = findIndexInArray(toDoStorage, objectUniqNumber);
     move(index, true);
   } else {
     return;
   }
-  update();
-  // if (!selectedProject) {
-  //   update(toDoStorage)
-  // } else {
-  //   update(multipleTodoLists, 'multipleTodoLists');
-  // }
 
-  // localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
+  update();
   resetForm();
-  // addZeroProject()
 };
 
 
@@ -290,15 +256,13 @@ function update() {
       html += toDoStorage[i].html;
     }
   }
-
   whereElenemt.innerHTML = html;
   localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
-  // localStorage.setItem('items', JSON.stringify(toDoStorage));
 }
 
 
 function clearStorage() {
-  localStorage.removeItem('items');
+  // localStorage.removeItem('items');
   toDoStorage = []
   uniqueNumber = 0
   const outPut = document.querySelector('.js-todo-list-4')
@@ -308,10 +272,14 @@ function clearStorage() {
   localStorage.removeItem('multipleTodoLists')
   localStorage.clear();
   const allMultipleButtons = document.querySelectorAll('.js-multiple-list')
-  allMultipleButtons.forEach(item => item.remove());
-  selectedProject = '';
+  allMultipleButtons.forEach((item) => {
+    if (!item.classList.contains('js-inbox')) {
+      item.remove();
+  }});
   addZeroProject()
-  counterProjects = -1;
+  counterProjects = 0;
+  paintToGreeInboxButton();
+  inboxButton.dataset.id = 0;
 };
 
 
@@ -323,9 +291,7 @@ function findIndexInArray(array, uniqNum) {
 
 function removeToDo(uniqNum) {
   const index = findIndexInArray(toDoStorage, uniqNum)
-
   toDoStorage.splice(index, 1);
-
   update();
 }
 
@@ -334,6 +300,7 @@ function resetForm() {
   document.querySelector('.js-fourth-practice-input').value = '';
   document.querySelector('.js-date-input').value = '';
 }
+
 
 function addToDoItemEnter(event) {
   if (event.keyCode === 13) {
@@ -422,7 +389,7 @@ allCheckbox = document.querySelector('.js-todo-list-4')
   });
 
 
-inboxButton.addEventListener('click', (event) => {
+inboxButton.addEventListener('click', () => {
   removeSelectProject();
   const index = multipleTodoLists.findIndex(element => element.prime === true)
   multipleTodoLists[index].selected = true;
@@ -430,6 +397,5 @@ inboxButton.addEventListener('click', (event) => {
 
   toDoStorage = getArrayTasksFromMultipleProject() || [];
   update();
-  // event.target.classList.add('selected-project');
-  paintToGreeInboxButton ()
+  // paintToGreeInboxButton()
 })
