@@ -5,13 +5,12 @@ const divMultipleTodoLists = document.querySelector('.js-multiple-todo-lists');
 const inboxButton = document.querySelector('.js-inbox');
 let toDoStorage = getArrayTasksFromMultipleProject() || [];
 let allCheckbox;
-// let counterProjects = 0;
 let counterProjects = getMaxid(multipleTodoLists);
 
 
 // добавление нулевого проета с проверкой
 function addZeroProject() {
-  inboxButton.dataset.id = 0; // при каждой перезагрузке добавляю
+  inboxButton.dataset.id = 0; // при каждой перезагрузке добавляю на страницу
   let zeroTask = multipleTodoLists.findIndex(object => object.prime === true)
   if (zeroTask == -1) {
     multipleTodoLists.push({ prime: true, tasks: [], id: 0, selected: true,})
@@ -30,14 +29,6 @@ function getArrayTasksFromMultipleProject() {
     return multipleTodoLists[id].tasks
   }
 }
-
-
-// function paintToGreeInboxButton() {
-//   const result = multipleTodoLists.find(element => element.prime === true && element.selected === true);
-//   if (result) {
-//     inboxButton.classList.add('selected-project');
-//   }
-// }
 
 
 function updateMultipleList() {
@@ -66,12 +57,9 @@ function updateMultipleList() {
 
 updateMultipleList(); // при перезагрузке стр подгрузить проеты
 selectProject(); // вешаю событие после перезагрузки стр
-// paintToGreeInboxButton();
-
 
 
 function addProject() {
-  // addZeroProject();
   if (multipleTodoLists.length >= 5) {
     alert('max 4 project');
     return;
@@ -262,7 +250,6 @@ function update() {
 
 
 function clearStorage() {
-  // localStorage.removeItem('items');
   toDoStorage = []
   uniqueNumber = 0
   const outPut = document.querySelector('.js-todo-list-4')
@@ -278,7 +265,6 @@ function clearStorage() {
   }});
   addZeroProject()
   counterProjects = 0;
-  // paintToGreeInboxButton();
   inboxButton.dataset.id = 0;
 };
 
@@ -392,5 +378,4 @@ allCheckbox = document.querySelector('.js-todo-list-4')
 inboxButton.addEventListener('click', () => {
   toDoStorage = getArrayTasksFromMultipleProject() || [];
   update();
-  // paintToGreeInboxButton()
 })
