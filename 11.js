@@ -144,13 +144,10 @@ function selectProject() {
 
 function removeSelectProject() {
   const allMultipleButtons = document.querySelectorAll('.js-multiple-list')
-
   allMultipleButtons.forEach((item) => {
     item.classList.remove('selected-project')
   })
-
   multipleTodoLists.forEach(x => x.selected = false);
-
   localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
 }
 
@@ -393,11 +390,6 @@ allCheckbox = document.querySelector('.js-todo-list-4')
 
 
 inboxButton.addEventListener('click', () => {
-  // removeSelectProject();
-  const index = multipleTodoLists.findIndex(element => element.prime === true)
-  multipleTodoLists[index].selected = true;
-  localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
-
   toDoStorage = getArrayTasksFromMultipleProject() || [];
   update();
   // paintToGreeInboxButton()
