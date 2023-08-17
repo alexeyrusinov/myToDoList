@@ -13,7 +13,7 @@ function addZeroProject() {
   inboxButton.dataset.id = 0; // при каждой перезагрузке добавляю на страницу
   let zeroTask = multipleTodoLists.findIndex(object => object.prime === true)
   if (zeroTask == -1) {
-    multipleTodoLists.push({ prime: true, tasks: [], id: 0, selected: true,})
+    multipleTodoLists.push({ prime: true, tasks: [], id: 0, selected: true, })
     localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
     inboxButton.dataset.id = 0;
     counterProjects += 1;
@@ -44,7 +44,14 @@ function updateMultipleList() {
         button.dataset.id = item.id;
         button.innerText = item.name;
         button.classList.add(`js-multiple-list`)
-        button.classList.add(`${item.name}`)
+        // button.classList.add(`${item.name}`)
+        button.classList.add('mouseOverOut')
+
+        let span = document.createElement('span');
+        span.innerText = 'X';
+        span.classList.add('projectHide')
+        button.appendChild(span);
+
         if (item.selected) {
           button.classList.add('selected-project');
         }
@@ -52,6 +59,7 @@ function updateMultipleList() {
       }
     }
   }
+  eventForRemoveProject();
 };
 
 
@@ -79,8 +87,14 @@ function addProject() {
     let button = document.createElement('button');
     button.dataset.id = counterProjects;
     button.innerText = userInput;
+    button.classList.add('mouseOverOut')
     button.classList.add(`js-multiple-list`)
     button.classList.add('selected-project')
+
+    let span = document.createElement('span');
+    span.innerText = 'X';
+    span.classList.add('projectHide')
+    button.appendChild(span);
     divMultipleTodoLists.prepend(button);
     multipleTodoLists.forEach(x => x.selected = false);
     const index = multipleTodoLists.findIndex(object => object.name === userInput)
@@ -95,13 +109,11 @@ document.querySelector('.add-project')
   .addEventListener('click', () => {
     addProject();
     localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
+    eventForRemoveProject();
   });
 
 
 divMultipleTodoLists.addEventListener('click', (event) => {
-  // if (event.target.classList.contains('add-project')) {
-  //   return;
-  // }
   selectProject();
   localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
 })
@@ -117,16 +129,14 @@ function selectProject() {
           allMultipleButtons[i].classList.remove('selected-project')
         }
       }
-      event.target.classList.add('selected-project')
+      event.currentTarget.classList.add('selected-project')
       multipleTodoLists.forEach(x => x.selected = false);
 
-      const index = multipleTodoLists.findIndex(object => object.id == event.target.dataset['id'])
+      const index = multipleTodoLists.findIndex(object => object.id == event.currentTarget.dataset['id'])
       multipleTodoLists[index]['selected'] = true;
     })
   })
   toDoStorage = getArrayTasksFromMultipleProject() || [];
-
-  // inboxButton.classList.remove('selected-project');
   update();
 }
 
@@ -142,7 +152,6 @@ function removeSelectProject() {
 
 function getMaxid(array) {
   let maxValue = 0;
-
   for (const i in array) {
     if (array[i].id > maxValue) {
       maxValue = array[i].id
@@ -262,7 +271,8 @@ function clearStorage() {
   allMultipleButtons.forEach((item) => {
     if (!item.classList.contains('js-inbox')) {
       item.remove();
-  }});
+    }
+  });
   addZeroProject()
   counterProjects = 0;
   inboxButton.dataset.id = 0;
@@ -379,3 +389,36 @@ inboxButton.addEventListener('click', () => {
   toDoStorage = getArrayTasksFromMultipleProject() || [];
   update();
 })
+
+
+function eventForRemoveProject () {
+  const hiddenDivs = document.querySelectorAll('.mouseOverOut');
+  hiddenDivs.forEach(item => {
+    item.addEventListener('mouseover', function (event) {
+      if (event.currentTarget.lastChild.classList.contains('projectHide')) {
+        event.currentTarget.lastChild.classList.add('projectInline')
+        event.currentTarget.lastChild.classList.remove('projectHide')
+      }
+    })
+  })
+  
+  hiddenDivs.forEach(item => {
+    item.addEventListener('mouseout', function (event) {
+      if (event.currentTarget.lastChild.classList.contains('projectInline')) {
+        event.currentTarget.lastChild.classList.add('projectHide')
+        event.currentTarget.lastChild.classList.remove('projectInline')
+      }
+    })
+  })
+  
+  hiddenDivs.forEach(item => {
+    item.addEventListener('click', function (event) {
+      if (event.target.classList.contains('projectInline')) {
+        console.log('удаляю проект');
+      }
+      // }
+    })
+  })
+}
+
+// Осталось написать логику удаления проекта

@@ -25,11 +25,22 @@ body {
 .js-multiple-list {
   background-color: white;
   border-width: 1.5px;
+  position: relative;
 }
 
 .add-project {
   font-size: 10px;
 }
+
+.projectInline {
+  display: inline;
+  position: absolute;
+  right: 3px;
+}
+.projectHide {
+  display: none;
+}
+
 
 .selected-project {
   background-color: green;
