@@ -6,6 +6,7 @@ const inboxButton = document.querySelector('.js-inbox');
 let toDoStorage = getArrayTasksFromMultipleProject() || [];
 let allCheckbox;
 let counterProjects = getMaxid(multipleTodoLists);
+const multipleProjectButtons = document.getElementsByClassName('js-multiple-list');
 
 
 // добавление нулевого проета с проверкой
@@ -49,6 +50,7 @@ function updateMultipleList() {
 
         let span = document.createElement('span');
         span.innerText = 'X';
+        span.classList.add('jsRemoveProject')
         span.classList.add('projectHide')
         button.appendChild(span);
 
@@ -65,6 +67,7 @@ function updateMultipleList() {
 
 updateMultipleList(); // при перезагрузке стр подгрузить проеты
 selectProject(); // вешаю событие после перезагрузки стр
+
 
 
 function addProject() {
@@ -94,6 +97,7 @@ function addProject() {
     let span = document.createElement('span');
     span.innerText = 'X';
     span.classList.add('projectHide')
+    span.classList.add('jsRemoveProject')
     button.appendChild(span);
     divMultipleTodoLists.prepend(button);
     multipleTodoLists.forEach(x => x.selected = false);
@@ -106,17 +110,29 @@ function addProject() {
 
 
 document.querySelector('.add-project')
-  .addEventListener('click', () => {
+  .addEventListener('click', (event) => {
     addProject();
+    // eventSelectButtons();
     localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
     eventForRemoveProject();
+    selectProject();
+    // eventSeletProject(event)
   });
 
 
-divMultipleTodoLists.addEventListener('click', (event) => {
-  selectProject();
-  localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
-})
+// divMultipleTodoLists.addEventListener('click', (event) => {
+// function eventSelectButtons () {
+
+
+
+// [...multipleProjectButtons].forEach((item) => {
+//   item.addEventListener('click', (event) => {
+//     selectProject();
+//     localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
+//   })
+// })
+
+
 
 
 function selectProject() {
@@ -133,12 +149,21 @@ function selectProject() {
       multipleTodoLists.forEach(x => x.selected = false);
 
       const index = multipleTodoLists.findIndex(object => object.id == event.currentTarget.dataset['id'])
-      multipleTodoLists[index]['selected'] = true;
+      if (index !== -1) {
+        multipleTodoLists[index]['selected'] = true;
+      } else {
+        console.log('че то не хватает');
+        // selectInboxProject();
+      }
+      localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
+      toDoStorage = getArrayTasksFromMultipleProject() || [];
+      update();
     })
   })
-  toDoStorage = getArrayTasksFromMultipleProject() || [];
-  update();
+
 }
+
+// переделать селект проджект чтобы не вешало так много событий по типу ремув проджект
 
 function removeSelectProject() {
   const allMultipleButtons = document.querySelectorAll('.js-multiple-list')
@@ -391,8 +416,9 @@ inboxButton.addEventListener('click', () => {
 })
 
 
-function eventForRemoveProject () {
+function eventForRemoveProject() {
   const hiddenDivs = document.querySelectorAll('.mouseOverOut');
+
   hiddenDivs.forEach(item => {
     item.addEventListener('mouseover', function (event) {
       if (event.currentTarget.lastChild.classList.contains('projectHide')) {
@@ -401,7 +427,7 @@ function eventForRemoveProject () {
       }
     })
   })
-  
+
   hiddenDivs.forEach(item => {
     item.addEventListener('mouseout', function (event) {
       if (event.currentTarget.lastChild.classList.contains('projectInline')) {
@@ -410,15 +436,66 @@ function eventForRemoveProject () {
       }
     })
   })
-  
-  hiddenDivs.forEach(item => {
-    item.addEventListener('click', function (event) {
-      if (event.target.classList.contains('projectInline')) {
-        console.log('удаляю проект');
-      }
-      // }
-    })
-  })
+
+
+
+
+
+
+  // hiddenDivs.forEach(item => {
+  //   item.addEventListener('click', function (event) {
+  //     // event.stopPropagation();
+  //     if (event.target.classList.contains('projectInline')) {
+
+  //       console.log(event.currentTarget, 'event.currentTarget')
+  //       // removeProject(event);
+  //     }
+  //     // }
+  //   })
+  // })
 }
 
-// Осталось написать логику удаления проекта
+function selectInboxProject() {
+  if (!inboxButton.classList.contains('selected-project')) {
+    console.log('work');
+    inboxButton.classList.add('selected-project')
+    const index = multipleTodoLists.findIndex(object => object.prime == true)
+    console.log(multipleTodoLists[index].selected);
+    multipleTodoLists[index].selected = true;
+    console.log(multipleTodoLists[index].selected);
+    // toDoStorage = getArrayTasksFromMultipleProject() || [];
+  }
+}
+
+
+
+
+  // const deleteProjectSpan = document.querySelector('.jsRemoveProject');
+  const wrapperForDeleteProjectButton = document.querySelector('.js-multiple-todo-lists');
+
+  // if (deleteProjectSpan) {
+  // deleteProjectSpan.addEventListener('click', (event) => {
+  wrapperForDeleteProjectButton.addEventListener('click', (event) => {
+    let wrapperRemoveButton = event.target;
+    if (wrapperRemoveButton.classList?.contains('jsRemoveProject')) { // optional chaining избавляет от undefined когда тапаешь по добавить проект
+      const id = wrapperRemoveButton.parentElement.dataset['id']
+    const index = multipleTodoLists.findIndex(object => object.id == id)
+    multipleTodoLists.splice(index, 1);
+    divMultipleTodoLists.removeChild(wrapperRemoveButton.parentElement);
+    selectInboxProject();
+    localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
+    // removeSelectProject();
+
+    // event.currentTarget.removeEventListener('click', selectProject());
+    // updateMultipleList(); // при перезагрузке стр подгрузить проеты
+    // selectProject();
+    toDoStorage = getArrayTasksFromMultipleProject() || []; 
+    update();
+    }
+  })
+  // }
+
+
+// }
+
+// много событий вешаю повторяющихся
