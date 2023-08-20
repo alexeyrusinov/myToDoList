@@ -66,7 +66,7 @@ function updateMultipleList() {
 
 
 updateMultipleList(); // при перезагрузке стр подгрузить проеты
-selectProject(); // вешаю событие после перезагрузки стр
+// selectProject(); // вешаю событие после перезагрузки стр
 
 
 
@@ -115,7 +115,7 @@ document.querySelector('.add-project')
     // eventSelectButtons();
     localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
     eventForRemoveProject();
-    selectProject();
+    // selectProject();
     // eventSeletProject(event)
   });
 
@@ -135,33 +135,33 @@ document.querySelector('.add-project')
 
 
 
-function selectProject() {
-  const allMultipleButtons = document.querySelectorAll('.js-multiple-list');
+// function selectProject() {
+//   const allMultipleButtons = document.querySelectorAll('.js-multiple-list');
 
-  allMultipleButtons.forEach((item) => {
-    item.addEventListener('click', (event) => {
-      for (let i = 0; i < allMultipleButtons.length; i++) {
-        if (allMultipleButtons[i].classList.contains('selected-project')) {
-          allMultipleButtons[i].classList.remove('selected-project')
-        }
-      }
-      event.currentTarget.classList.add('selected-project')
-      multipleTodoLists.forEach(x => x.selected = false);
+//   allMultipleButtons.forEach((item) => {
+//     item.addEventListener('click', (event) => {
+//       for (let i = 0; i < allMultipleButtons.length; i++) {
+//         if (allMultipleButtons[i].classList.contains('selected-project')) {
+//           allMultipleButtons[i].classList.remove('selected-project')
+//         }
+//       }
+//       event.currentTarget.classList.add('selected-project')
+//       multipleTodoLists.forEach(x => x.selected = false);
 
-      const index = multipleTodoLists.findIndex(object => object.id == event.currentTarget.dataset['id'])
-      if (index !== -1) {
-        multipleTodoLists[index]['selected'] = true;
-      } else {
-        console.log('че то не хватает');
-        // selectInboxProject();
-      }
-      localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
-      toDoStorage = getArrayTasksFromMultipleProject() || [];
-      update();
-    })
-  })
+//       const index = multipleTodoLists.findIndex(object => object.id == event.currentTarget.dataset['id'])
+//       if (index !== -1) {
+//         multipleTodoLists[index]['selected'] = true;
+//       } else {
+//         console.log('че то не хватает');
+//         // selectInboxProject();
+//       }
+//       localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
+//       toDoStorage = getArrayTasksFromMultipleProject() || [];
+//       update();
+//     })
+//   })
 
-}
+// }
 
 // переделать селект проджект чтобы не вешало так много событий по типу ремув проджект
 
@@ -455,30 +455,27 @@ function eventForRemoveProject() {
   // })
 }
 
+
 function selectInboxProject() {
   if (!inboxButton.classList.contains('selected-project')) {
-    console.log('work');
     inboxButton.classList.add('selected-project')
     const index = multipleTodoLists.findIndex(object => object.prime == true)
-    console.log(multipleTodoLists[index].selected);
     multipleTodoLists[index].selected = true;
-    console.log(multipleTodoLists[index].selected);
-    // toDoStorage = getArrayTasksFromMultipleProject() || [];
   }
 }
 
 
 
 
-  // const deleteProjectSpan = document.querySelector('.jsRemoveProject');
-  const wrapperForDeleteProjectButton = document.querySelector('.js-multiple-todo-lists');
+// const deleteProjectSpan = document.querySelector('.jsRemoveProject');
+const wrapperForDeleteProjectButton = document.querySelector('.js-multiple-todo-lists');
 
-  // if (deleteProjectSpan) {
-  // deleteProjectSpan.addEventListener('click', (event) => {
-  wrapperForDeleteProjectButton.addEventListener('click', (event) => {
-    let wrapperRemoveButton = event.target;
-    if (wrapperRemoveButton.classList?.contains('jsRemoveProject')) { // optional chaining избавляет от undefined когда тапаешь по добавить проект
-      const id = wrapperRemoveButton.parentElement.dataset['id']
+// if (deleteProjectSpan) {
+// deleteProjectSpan.addEventListener('click', (event) => {
+wrapperForDeleteProjectButton.addEventListener('click', (event) => {
+  let wrapperRemoveButton = event.target;
+  if (wrapperRemoveButton.classList?.contains('jsRemoveProject')) { // optional chaining избавляет от undefined когда тапаешь по добавить проект
+    const id = wrapperRemoveButton.parentElement.dataset['id']
     const index = multipleTodoLists.findIndex(object => object.id == id)
     multipleTodoLists.splice(index, 1);
     divMultipleTodoLists.removeChild(wrapperRemoveButton.parentElement);
@@ -489,13 +486,39 @@ function selectInboxProject() {
     // event.currentTarget.removeEventListener('click', selectProject());
     // updateMultipleList(); // при перезагрузке стр подгрузить проеты
     // selectProject();
-    toDoStorage = getArrayTasksFromMultipleProject() || []; 
+    toDoStorage = getArrayTasksFromMultipleProject() || [];
     update();
-    }
-  })
-  // }
+  }
+})
+// }
 
 
 // }
 
 // много событий вешаю повторяющихся
+
+const wrapperAllMultipleButtons = document.querySelector('.all-projects');
+const allMultipleButtons = document.getElementsByClassName('js-multiple-list');
+
+wrapperAllMultipleButtons.addEventListener('click', (event) => {
+  if (event.target?.classList.contains('js-multiple-list')) {
+    for (let i = 0; i < allMultipleButtons.length; i++) {
+      // if (allMultipleButtons[i].classList.contains('selected-project')) {
+        allMultipleButtons[i].classList.remove('selected-project')
+      // }
+    }
+    event.target.classList.add('selected-project')
+    multipleTodoLists.forEach(x => x.selected = false);
+
+    const index = multipleTodoLists.findIndex(object => object.id == event.target.dataset['id'])
+    if (index !== -1) {
+      multipleTodoLists[index]['selected'] = true;
+    } else {
+      console.log('че то не хватает');
+      // selectInboxProject();
+    }
+    localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
+    toDoStorage = getArrayTasksFromMultipleProject() || [];
+    update();
+  }
+})
