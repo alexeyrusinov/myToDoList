@@ -474,12 +474,16 @@ const wrapperForDeleteProjectButton = document.querySelector('.js-multiple-todo-
 // deleteProjectSpan.addEventListener('click', (event) => {
 wrapperForDeleteProjectButton.addEventListener('click', (event) => {
   let wrapperRemoveButton = event.target;
+  // let removeButton = event.target.parentElement;
   if (wrapperRemoveButton.classList?.contains('jsRemoveProject')) { // optional chaining избавляет от undefined когда тапаешь по добавить проект
     const id = wrapperRemoveButton.parentElement.dataset['id']
     const index = multipleTodoLists.findIndex(object => object.id == id)
+    if (multipleTodoLists[index].selected == true) {
+      selectInboxProject();
+    }
     multipleTodoLists.splice(index, 1);
     divMultipleTodoLists.removeChild(wrapperRemoveButton.parentElement);
-    selectInboxProject();
+    
     localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
     // removeSelectProject();
 
