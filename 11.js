@@ -245,7 +245,8 @@ function clearStorage() {
       item.remove();
     }
   });
-  addZeroProject()
+  addZeroProject();
+  selectInboxProject();
   counterProjects = 0;
   inboxButton.dataset.id = 0;
 };
@@ -366,28 +367,24 @@ inboxButton.addEventListener('click', () => {
 
 const divWithButton = document.querySelector('.js-multiple-todo-lists');
 divWithButton.addEventListener('mouseover', (event) => {
-  console.log(event);
-  if (event.target.lastChild.tagName == 'SPAN') {
-    event.target.lastChild.classList.remove('projectHide');
-    event.target.lastChild.classList.add('projectInline');
-  }
-  if (event.target.classList.contains('jsRemoveProject')) {
-    event.target.classList.remove('projectHide');
-    event.target.classList.add('projectInline');
-  }
+  toogleXclassButton(event);
 })
 
 divWithButton.addEventListener('mouseout', (event) => {
-  console.log(event);
+  toogleXclassButton(event);
+})
+
+
+function toogleXclassButton(event) {
   if (event.target.lastChild.tagName == 'SPAN') {
-    event.target.lastChild.classList.remove('projectInline');
-    event.target.lastChild.classList.add('projectHide');
+    event.target.lastChild.classList.toggle('projectInline');
+    event.target.lastChild.classList.toggle('projectHide');
   }
   if (event.target.classList.contains('jsRemoveProject')) {
-    event.target.classList.remove('projectInline');
-    event.target.classList.add('projectHide');
+    event.target.classList.toggle('projectInline');
+    event.target.classList.toggle('projectHide');
   }
-})
+}
 
 
 function selectInboxProject() {
