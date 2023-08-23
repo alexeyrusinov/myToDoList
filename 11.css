@@ -36,6 +36,8 @@ body {
   display: inline;
   position: absolute;
   right: 3px;
+  background-color: red;
+  width: 30px;
 }
 .projectHide {
   display: none;
