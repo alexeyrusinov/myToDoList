@@ -61,7 +61,7 @@ function updateMultipleList() {
       }
     }
   }
-  eventForRemoveProject();
+  // eventForRemoveProject();
 };
 
 
@@ -114,7 +114,7 @@ document.querySelector('.add-project')
     addProject();
     // eventSelectButtons();
     localStorage.setItem('multipleTodoLists', JSON.stringify(multipleTodoLists));
-    eventForRemoveProject();
+    // eventForRemoveProject();
     // selectProject();
     // eventSeletProject(event)
   });
@@ -416,28 +416,64 @@ inboxButton.addEventListener('click', () => {
 })
 
 
-function eventForRemoveProject() {
-  const hiddenDivs = document.querySelectorAll('.mouseOverOut');
+// function eventForRemoveProject() {
+//   const hiddenDivs = document.querySelectorAll('.mouseOverOut');
 
-  hiddenDivs.forEach(item => {
-    item.addEventListener('mouseover', function (event) {
-      if (event.currentTarget.lastChild.classList.contains('projectHide')) {
-        event.currentTarget.lastChild.classList.add('projectInline')
-        event.currentTarget.lastChild.classList.remove('projectHide')
-      }
-    })
+//   hiddenDivs.forEach(item => {
+//     item.addEventListener('mouseover', function (event) {
+//       if (event.currentTarget.lastChild.classList.contains('projectHide')) {
+//         event.currentTarget.lastChild.classList.add('projectInline')
+//         event.currentTarget.lastChild.classList.remove('projectHide')
+//       }
+//     })
+//   })
+
+//   hiddenDivs.forEach(item => {
+//     item.addEventListener('mouseout', function (event) {
+//       if (event.currentTarget.lastChild.classList.contains('projectInline')) {
+//         event.currentTarget.lastChild.classList.add('projectHide')
+//         event.currentTarget.lastChild.classList.remove('projectInline')
+//       }
+//     })
+//   })
+
+
+  const divWithButton = document.querySelector('.js-multiple-todo-lists');
+  divWithButton.addEventListener('mouseover', (event) => {
+    if (event.target.lastChild.classList?.contains('projectHide')) {
+      event.target.lastChild.classList.remove('projectHide');
+      event.target.lastChild.classList.add('projectInline');
+    }
   })
 
-  hiddenDivs.forEach(item => {
-    item.addEventListener('mouseout', function (event) {
-      if (event.currentTarget.lastChild.classList.contains('projectInline')) {
-        event.currentTarget.lastChild.classList.add('projectHide')
-        event.currentTarget.lastChild.classList.remove('projectInline')
-      }
-    })
+  divWithButton.addEventListener('mouseout', (event) => {
+    if (event.target.lastChild.classList?.contains('projectInline')) {
+      event.target.lastChild.classList.remove('projectInline');
+      event.target.lastChild.classList.add('projectHide');
+    }
   })
+  // if (event.target.lastChild.classList?.contains('projectInline')) {
+  //   event.target.lastChild.classList.remove('projectInline')
+  //   event.target.lastChild.classList.add('projectHide')
+  // }
 
+  // hiddenDivs.forEach(item => {
+  //   item.addEventListener('mouseover', function (event) {
+  //     if (event.currentTarget.lastChild.classList.contains('projectHide')) {
+  //       event.currentTarget.lastChild.classList.add('projectInline')
+  //       event.currentTarget.lastChild.classList.remove('projectHide')
+  //     }
+  //   })
+  // })
 
+  // hiddenDivs.forEach(item => {
+  //   item.addEventListener('mouseout', function (event) {
+  //     if (event.currentTarget.lastChild.classList.contains('projectInline')) {
+  //       event.currentTarget.lastChild.classList.add('projectHide')
+  //       event.currentTarget.lastChild.classList.remove('projectInline')
+  //     }
+  //   })
+  // })
 
 
 
@@ -453,7 +489,7 @@ function eventForRemoveProject() {
   //     // }
   //   })
   // })
-}
+// }
 
 
 function selectInboxProject() {
