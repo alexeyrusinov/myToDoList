@@ -370,15 +370,15 @@ inboxButton.addEventListener('click', () => {
 // Добавляю евенты на х кнопки удаления проектов
 const divWithButton = document.querySelector('.js-multiple-todo-lists');
 divWithButton.addEventListener('mouseover', (event) => {
-  toogleXclassButton(event);
+  toggleXclassButton(event);
 })
 
 divWithButton.addEventListener('mouseout', (event) => {
-  toogleXclassButton(event);
+  toggleXclassButton(event);
 })
 
 
-function toogleXclassButton(event) {
+function toggleXclassButton(event) {
   if (event.target.lastChild.tagName == 'SPAN') {
     event.target.lastChild.classList.toggle('projectInline');
     event.target.lastChild.classList.toggle('projectHide');
