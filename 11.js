@@ -1,33 +1,150 @@
-// достаем из памяти строку и преобразовываем массив с обьектавми внутри
-const todoItems = JSON.parse(localStorage.getItem('items'));
-let toDoStorage = [];
-let allCheckbox;
+// после добавления пустого проекта исправить покраску инбокс баттон
 
-// закидываем из памяти в
-if (todoItems) {
-  todoItems.forEach(object => toDoStorage.push(object))
+let multipleTodoLists = JSON.parse(localStorage.getItem('multipleTodoLists')) || [];
+const divMultipleTodoLists = document.querySelector('.js-multiple-todo-lists');
+const inboxButton = document.querySelector('.js-inbox');
+let toDoStorage = getArrayTasksFromMultipleProject() || [];
+let allCheckbox;
+let counterProjects = getMaxid(multipleTodoLists);
+const multipleProjectButtons = document.getElementsByClassName('js-multiple-list');
+
+function saveDataToLocalStorage(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+// добавление нулевого проета с проверкой
+function addZeroProject() {
+  inboxButton.dataset.id = 0; // при каждой перезагрузке добавляю на страницу
+  let zeroTask = multipleTodoLists.findIndex(object => object.prime === true)
+  if (zeroTask == -1) {
+    multipleTodoLists.push({ prime: true, tasks: [], id: 0, selected: true, })
+    saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
+    inboxButton.dataset.id = 0;
+    counterProjects += 1;
+  }
+}
+
+addZeroProject();
+
+
+function getArrayTasksFromMultipleProject() {
+  const id = multipleTodoLists.findIndex(element => element.selected === true);
+  if (id !== -1) {
+    return multipleTodoLists[id].tasks
+  }
+}
+
+
+function updateMultipleList() {
+  if (multipleTodoLists) {
+    for (let index = 0; index < multipleTodoLists.length; index++) {
+      const item = multipleTodoLists[index];
+      if (item.prime === true && item.selected === true) {
+        inboxButton.classList.add('selected-project');
+        continue;
+      }
+      if (item.name) {
+        let button = document.createElement('button');
+        button.dataset.id = item.id;
+        button.innerText = item.name;
+        button.classList.add(`js-multiple-list`)
+        button.classList.add('mouseOverOut')
+
+        let span = document.createElement('span');
+        span.innerText = 'X';
+        span.classList.add('jsRemoveProject')
+        span.classList.add('projectHide')
+        button.appendChild(span);
+
+        if (item.selected) {
+          button.classList.add('selected-project');
+        }
+        divMultipleTodoLists.prepend(button);
+      }
+    }
+  }
 };
 
 
-function getMaxid() {
-  let maxValue = 0;
+updateMultipleList(); // при перезагрузке стр подгрузить проеты
 
-  for (const i in toDoStorage) {
-    if (toDoStorage[i].id > maxValue) {
-      maxValue = toDoStorage[i].id
+
+function addProject() {
+  if (multipleTodoLists.length >= 5) {
+    alert('max 4 project');
+    return;
+  }
+  const userInput = prompt('Project name: ');
+  if (!userInput || userInput === ' ') {
+    alert('поле не может быть пустым');
+    return;
+  } else {
+    counterProjects += 1;
+    removeSelectProject();
+    multipleTodoLists.push({
+      name: `${userInput}`,
+      tasks: [],
+      id: counterProjects,
+    })
+    let button = document.createElement('button');
+    button.dataset.id = counterProjects;
+    button.innerText = userInput;
+    button.classList.add('mouseOverOut')
+    button.classList.add(`js-multiple-list`)
+    button.classList.add('selected-project')
+
+    let span = document.createElement('span');
+    span.innerText = 'X';
+    span.classList.add('projectHide')
+    span.classList.add('jsRemoveProject')
+    button.appendChild(span);
+    divMultipleTodoLists.prepend(button);
+    multipleTodoLists.forEach(x => x.selected = false);
+    const index = multipleTodoLists.findIndex(object => object.name === userInput)
+    multipleTodoLists[index]['selected'] = true;
+    toDoStorage = getArrayTasksFromMultipleProject() || [];
+    update();
+  }
+}
+
+
+document.querySelector('.add-project')
+  .addEventListener('click', (event) => {
+    addProject();
+    saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
+  });
+
+
+function removeSelectProject() {
+  const allMultipleButtons = document.querySelectorAll('.js-multiple-list')
+  allMultipleButtons.forEach((item) => {
+    item.classList.remove('selected-project')
+  })
+  multipleTodoLists.forEach(x => x.selected = false);
+  saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
+}
+
+
+function getMaxid(array) {
+  let maxValue = 0;
+  for (const i in array) {
+    if (array[i].id > maxValue) {
+      maxValue = array[i].id
     }
   }
   return maxValue;
 };
 
-let uniqueNumber = getMaxid();
+
+let uniqueNumber = getMaxid(toDoStorage);
 
 update();
 
 
-function addToDoItem() {
+function addTask() {
   let nameElemet = document.querySelector('.js-fourth-practice-input').value;
   let dateElement = document.getElementById('js-date').value;
+  const projectIndex = multipleTodoLists.findIndex(element => element.selected === true);
   let items = {
     toDoName: nameElemet,
     date: dateElement,
@@ -38,12 +155,14 @@ function addToDoItem() {
 
   if (items.toDoName) {
     toDoStorage.push(items);
+    multipleTodoLists[projectIndex]['tasks'] = toDoStorage
     let objectUniqNumber = items.id;
     let index = findIndexInArray(toDoStorage, objectUniqNumber);
     move(index, true);
   } else {
     return;
   }
+
   update();
   resetForm();
 };
@@ -109,21 +228,31 @@ function update() {
       html += toDoStorage[i].html;
     }
   }
-
   whereElenemt.innerHTML = html;
-  localStorage.setItem('items', JSON.stringify(toDoStorage));
+  saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
 }
 
 
 function clearStorage() {
-  localStorage.removeItem('items');
-  localStorage.clear;
   toDoStorage = []
   uniqueNumber = 0
   const outPut = document.querySelector('.js-todo-list-4')
-  outPut.innerHTML = ''
+  outPut.innerHTML = '';
   resetForm();
-}
+  multipleTodoLists = [];
+  localStorage.removeItem('multipleTodoLists')
+  localStorage.clear();
+  const allMultipleButtons = document.querySelectorAll('.js-multiple-list')
+  allMultipleButtons.forEach((item) => {
+    if (!item.classList.contains('js-inbox')) {
+      item.remove();
+    }
+  });
+  addZeroProject();
+  selectInboxProject();
+  counterProjects = 0;
+  inboxButton.dataset.id = 0;
+};
 
 
 function findIndexInArray(array, uniqNum) {
@@ -133,11 +262,8 @@ function findIndexInArray(array, uniqNum) {
 
 
 function removeToDo(uniqNum) {
-  index = findIndexInArray(toDoStorage, uniqNum)
-  console.log(toDoStorage[index].toDoName + ' - deleted');
-
+  const index = findIndexInArray(toDoStorage, uniqNum)
   toDoStorage.splice(index, 1);
-
   update();
 }
 
@@ -147,9 +273,10 @@ function resetForm() {
   document.querySelector('.js-date-input').value = '';
 }
 
+
 function addToDoItemEnter(event) {
   if (event.keyCode === 13) {
-    addToDoItem();
+    addTask();
   } else if (event.keyCode === 27) {
     resetForm();
   }
@@ -168,7 +295,7 @@ document.querySelector('.js-clear-storage')
   .addEventListener('click', clearStorage);
 
 document.querySelector('.js-add-task-button')
-  .addEventListener('click', addToDoItem);
+  .addEventListener('click', addTask);
 
 document.querySelector('.js-todo-row')
   .addEventListener('keydown', (event) => {
@@ -221,14 +348,90 @@ allCheckbox = document.querySelector('.js-todo-list-4')
 
     if (event.target.checked) {
       toDoStorage[index].isDone = true;
-      localStorage.setItem('items', JSON.stringify(toDoStorage));
+      saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
       move(index);
       update();
 
     } else {
       toDoStorage[index].isDone = false;
-      localStorage.setItem('items', JSON.stringify(toDoStorage))
+      saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
       move(index, true);
       update();
     };
   });
+
+
+inboxButton.addEventListener('click', () => {
+  toDoStorage = getArrayTasksFromMultipleProject() || [];
+  update();
+})
+
+
+// Добавляю евенты на х кнопки удаления проектов
+const divWithButton = document.querySelector('.js-multiple-todo-lists');
+divWithButton.addEventListener('mouseover', toggleXclassButton);
+divWithButton.addEventListener('mouseout', toggleXclassButton);
+
+
+function toggleXclassButton(event) {
+  if (event.target.lastChild.tagName == 'SPAN') {
+    event.target.lastChild.classList.toggle('projectInline');
+    event.target.lastChild.classList.toggle('projectHide');
+  }
+  if (event.target.classList.contains('jsRemoveProject')) {
+    event.target.classList.toggle('projectInline');
+    event.target.classList.toggle('projectHide');
+  }
+}
+
+
+function selectInboxProject() {
+  if (!inboxButton.classList.contains('selected-project')) {
+    inboxButton.classList.add('selected-project')
+    const index = multipleTodoLists.findIndex(object => object.prime == true)
+    multipleTodoLists[index].selected = true;
+  }
+}
+
+
+const wrapperForDeleteProjectButton = document.querySelector('.js-multiple-todo-lists');
+
+wrapperForDeleteProjectButton.addEventListener('click', (event) => {
+  let wrapperRemoveButton = event.target;
+  if (wrapperRemoveButton.classList?.contains('jsRemoveProject')) { // optional chaining избавляет от undefined когда тапаешь по добавить проект
+    const id = wrapperRemoveButton.parentElement.dataset['id']
+    const index = multipleTodoLists.findIndex(object => object.id == id)
+    if (multipleTodoLists[index].selected == true) {
+      selectInboxProject();
+    }
+    multipleTodoLists.splice(index, 1);
+    divMultipleTodoLists.removeChild(wrapperRemoveButton.parentElement);
+    saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
+    toDoStorage = getArrayTasksFromMultipleProject() || [];
+    update();
+  }
+})
+
+
+const wrapperAllMultipleButtons = document.querySelector('.all-projects');
+const allMultipleButtons = document.getElementsByClassName('js-multiple-list');
+
+wrapperAllMultipleButtons.addEventListener('click', (event) => {
+  if (event.target?.classList.contains('js-multiple-list')) {
+    for (let i = 0; i < allMultipleButtons.length; i++) {
+      allMultipleButtons[i].classList.remove('selected-project')
+    }
+    event.target.classList.add('selected-project')
+    multipleTodoLists.forEach(x => x.selected = false);
+
+    const index = multipleTodoLists.findIndex(object => object.id == event.target.dataset['id'])
+    if (index !== -1) {
+      multipleTodoLists[index]['selected'] = true;
+    } else {
+      console.log('че то не хватает');
+    }
+    saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
+    toDoStorage = getArrayTasksFromMultipleProject() || [];
+    update();
+  }
+})
