@@ -369,13 +369,8 @@ inboxButton.addEventListener('click', () => {
 
 // Добавляю евенты на х кнопки удаления проектов
 const divWithButton = document.querySelector('.js-multiple-todo-lists');
-divWithButton.addEventListener('mouseover', (event) => {
-  toggleXclassButton(event);
-})
-
-divWithButton.addEventListener('mouseout', (event) => {
-  toggleXclassButton(event);
-})
+divWithButton.addEventListener('mouseover', toggleXclassButton);
+divWithButton.addEventListener('mouseout', toggleXclassButton);
 
 
 function toggleXclassButton(event) {
