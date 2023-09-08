@@ -138,7 +138,7 @@ function getMaxid(array) {
 
 let uniqueNumber = getMaxid(toDoStorage);
 
-updateTasks();
+updateTasks(); // это включить  чтобы работало корректно убрано для примера ------------------------------------------------------------------
 
 
 function addTaskToStoradge() {
@@ -175,11 +175,14 @@ function createElementWithClass(tagName, classNames = []) {
 
 function updateTasks() {
   const whereElenemt = document.querySelector('.js-todo-list-4');
-  whereElenemt.innerHTML = '';
+  whereElenemt.innerHTML = ''; // обннуляем перед апдейтом
 
   toDoStorage.forEach(todoItem => {
-    let todoItemDiv = createElementWithClass('div', ['js-todo-row-with-check'])
+    // let todoItemDiv = createElementWithClass('div', ['js-todo-row-with-check'])
+    let todoItemDiv = createElementWithClass('tr', ['js-todo-row-with-check'])
     todoItemDiv.dataset.firstindex = todoItem.id;
+
+    let firstTd = createElementWithClass('td', ['example'])
 
 
     let checkbox = createElementWithClass('input', ['js-checkbox'])
@@ -190,22 +193,37 @@ function updateTasks() {
       checkbox.defaultChecked = false;
     }
 
-    todoItemDiv.appendChild(checkbox);
+    // todoItemDiv.appendChild(checkbox);
+    firstTd.appendChild(checkbox);
+    todoItemDiv.appendChild(firstTd)
+
+    let secondTd = createElementWithClass('td', ['example']);
 
     let nameDiv = createElementWithClass('div', ['js-nameDiv'])
     nameDiv.innerHTML = todoItem.toDoName;
 
-    todoItemDiv.appendChild(nameDiv);
+    secondTd.appendChild(nameDiv);
+    todoItemDiv.appendChild(secondTd)
+
+    let thirdTd = createElementWithClass('td', ['example']);
 
     let dateDiv = createElementWithClass('div', ['js-date-output'])
     dateDiv.innerHTML = todoItem.date.split('-').reverse().join('-');
-    todoItemDiv.appendChild(dateDiv);
+    // todoItemDiv.appendChild(dateDiv);
+    thirdTd.appendChild(dateDiv);
+    todoItemDiv.appendChild(thirdTd)
+
+
+
+    let fourthTd = createElementWithClass('td', ['example']);
 
     let button = createElementWithClass('button', ['remove-button', 'js-delete-button'])
     button.innerHTML = 'Delete';
     button.dataset.index = todoItem.id;
 
-    todoItemDiv.appendChild(button);
+    // todoItemDiv.appendChild(button);
+    fourthTd.appendChild(button);
+    todoItemDiv.appendChild(fourthTd)
     whereElenemt.appendChild(todoItemDiv);
   });
 
@@ -415,3 +433,5 @@ wrapperAllMultipleButtons.addEventListener('click', (event) => {
     updateTasks();
   }
 })
+
+
