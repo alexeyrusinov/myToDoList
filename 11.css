@@ -65,14 +65,14 @@ body {
   /* margin-bottom: 10px; */
 }
 
-.js-todo-row-with-check {
+/* .js-todo-row-with-check { */
   /* display: grid;
   column-gap: 10px;
   grid-template-columns: 20px 300px 120px 100px;
   align-items: center;
   overflow-wrap: break-word;
   margin-bottom: 10px; */
-}
+/* } */
 
 .todo-input-row {
   margin-bottom: 10px;
