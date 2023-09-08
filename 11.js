@@ -148,7 +148,6 @@ function addTask() {
   let items = {
     toDoName: nameElemet,
     date: dateElement,
-    html: '',
     id: uniqueNumber += 1,
     isDone: '',
   };
@@ -168,67 +167,48 @@ function addTask() {
 };
 
 
+function createElementWithClass(tagName, classNames = []) {
+  const element = document.createElement(tagName);
+  classNames.forEach(className => element.classList.add(className));
+  return element;
+}
+
 function update() {
   const whereElenemt = document.querySelector('.js-todo-list-4');
-  let html = ''
+  whereElenemt.innerHTML = '';
 
-  for (const i in toDoStorage) {
+  toDoStorage.forEach(todoItem => {
+    let todoItemDiv = createElementWithClass('div', ['js-todo-row-with-check'])
+    todoItemDiv.dataset.firstindex = todoItem.id;
 
-    if (toDoStorage[i].html) {
 
-      if (toDoStorage[i].isDone) {
-        let parser = new DOMParser();
-        let parsedDocument = parser.parseFromString(toDoStorage[i].html, "text/html");
-        parsedDocument.body.firstChild.firstChild.defaultChecked = true;
-        parsedDocument.body.firstChild.childNodes[1].classList.add('done-tusk');
-        toDoStorage[i].html = parsedDocument.body.firstChild.outerHTML;
-      } else if (!toDoStorage[i].isDone) {
-        let parser = new DOMParser();
-        let parsedDocument = parser.parseFromString(toDoStorage[i].html, "text/html");
-        parsedDocument.body.firstChild.firstChild.defaultChecked = false;
-        parsedDocument.body.firstChild.childNodes[1].classList.remove('done-tusk');
-        toDoStorage[i].html = parsedDocument.body.firstChild.outerHTML;
-      }
-
-      html += toDoStorage[i].html;
-
+    let checkbox = createElementWithClass('input', ['js-checkbox'])
+    checkbox.type = "checkbox";
+    if (todoItem.isDone) {
+      checkbox.defaultChecked = true;
     } else {
-      let myDiv = document.createElement('div');
-      myDiv.classList.add('js-todo-row-with-check');
-      myDiv.dataset.firstindex = toDoStorage[i].id;
-
-      let checkbox = document.createElement('input');
-      checkbox.type = "checkbox";
-      checkbox.classList.add('js-checkbox')
-      // checkbox.defaultChecked = true;
-
-      myDiv.appendChild(checkbox);
-
-      let nameDiv = document.createElement('div');
-      nameDiv.classList.add('js-nameDiv');
-      nameDiv.innerHTML = toDoStorage[i].toDoName;
-
-      myDiv.appendChild(nameDiv);
-
-      let dateDiv = document.createElement('div');
-      dateDiv.classList.add('js-date-output');
-      dateDiv.innerHTML = toDoStorage[i].date.split('-').reverse().join('-');
-      myDiv.appendChild(dateDiv);
-
-      let button = document.createElement('button');
-      button.innerHTML = 'Delete';
-      button.classList.add('remove-button');
-      button.classList.add('js-delete-button');
-      button.dataset.index = toDoStorage[i].id;
-
-      myDiv.appendChild(button);
-
-      toDoStorage[i].html = myDiv.outerHTML;
-
-      html += toDoStorage[i].html;
+      checkbox.defaultChecked = false;
     }
-  }
-  whereElenemt.innerHTML = html;
+
+    todoItemDiv.appendChild(checkbox);
+
+    let nameDiv = createElementWithClass('div', ['js-nameDiv'])
+    nameDiv.innerHTML = todoItem.toDoName;
+
+    todoItemDiv.appendChild(nameDiv);
+
+    let dateDiv = createElementWithClass('div', ['js-date-output'])
+    dateDiv.innerHTML = todoItem.date.split('-').reverse().join('-');
+    todoItemDiv.appendChild(dateDiv);
+
+    let button = createElementWithClass('button', ['remove-button', 'js-delete-button'])
+    button.innerHTML = 'Delete';
+    button.dataset.index = todoItem.id;
+
+    todoItemDiv.appendChild(button);
+    whereElenemt.appendChild(todoItemDiv);
+  });
+
   saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
 }
 
@@ -347,13 +327,13 @@ allCheckbox = document.querySelector('.js-todo-list-4')
     let index = findIndexInArray(toDoStorage, objectUniqNumber);
 
     if (event.target.checked) {
-      toDoStorage[index].isDone = true;
+      toDoStorage[index].isDone = true; //ссылаемся на один обьект измененния затрагивают и multipleTodoLists
       saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
       move(index);
       update();
 
     } else {
-      toDoStorage[index].isDone = false;
+      toDoStorage[index].isDone = false; //ссылаемся на один обьект измененния затрагивают и multipleTodoLists
       saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
       move(index, true);
       update();
