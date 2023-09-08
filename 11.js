@@ -103,7 +103,7 @@ function addProject() {
     const index = multipleTodoLists.findIndex(object => object.name === userInput)
     multipleTodoLists[index]['selected'] = true;
     toDoStorage = getArrayTasksFromMultipleProject() || [];
-    update();
+    updateTasks();
   }
 }
 
@@ -138,10 +138,10 @@ function getMaxid(array) {
 
 let uniqueNumber = getMaxid(toDoStorage);
 
-update();
+updateTasks();
 
 
-function addTask() {
+function addTaskToStoradge() {
   let nameElemet = document.querySelector('.js-fourth-practice-input').value;
   let dateElement = document.getElementById('js-date').value;
   const projectIndex = multipleTodoLists.findIndex(element => element.selected === true);
@@ -162,7 +162,7 @@ function addTask() {
     return;
   }
 
-  update();
+  updateTasks();
   resetForm();
 };
 
@@ -173,7 +173,7 @@ function createElementWithClass(tagName, classNames = []) {
   return element;
 }
 
-function update() {
+function updateTasks() {
   const whereElenemt = document.querySelector('.js-todo-list-4');
   whereElenemt.innerHTML = '';
 
@@ -244,7 +244,7 @@ function findIndexInArray(array, uniqNum) {
 function removeToDo(uniqNum) {
   const index = findIndexInArray(toDoStorage, uniqNum)
   toDoStorage.splice(index, 1);
-  update();
+  updateTasks();
 }
 
 
@@ -256,7 +256,7 @@ function resetForm() {
 
 function addToDoItemEnter(event) {
   if (event.keyCode === 13) {
-    addTask();
+    addTaskToStoradge();
   } else if (event.keyCode === 27) {
     resetForm();
   }
@@ -275,7 +275,7 @@ document.querySelector('.js-clear-storage')
   .addEventListener('click', clearStorage);
 
 document.querySelector('.js-add-task-button')
-  .addEventListener('click', addTask);
+  .addEventListener('click', addTaskToStoradge);
 
 document.querySelector('.js-todo-row')
   .addEventListener('keydown', (event) => {
@@ -330,20 +330,20 @@ allCheckbox = document.querySelector('.js-todo-list-4')
       toDoStorage[index].isDone = true; //ссылаемся на один обьект измененния затрагивают и multipleTodoLists
       saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
       move(index);
-      update();
+      updateTasks();
 
     } else {
       toDoStorage[index].isDone = false; //ссылаемся на один обьект измененния затрагивают и multipleTodoLists
       saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
       move(index, true);
-      update();
+      updateTasks();
     };
   });
 
 
 inboxButton.addEventListener('click', () => {
   toDoStorage = getArrayTasksFromMultipleProject() || [];
-  update();
+  updateTasks();
 })
 
 
@@ -388,7 +388,7 @@ wrapperForDeleteProjectButton.addEventListener('click', (event) => {
     divMultipleTodoLists.removeChild(wrapperRemoveButton.parentElement);
     saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
     toDoStorage = getArrayTasksFromMultipleProject() || [];
-    update();
+    updateTasks();
   }
 })
 
@@ -412,6 +412,6 @@ wrapperAllMultipleButtons.addEventListener('click', (event) => {
     }
     saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
     toDoStorage = getArrayTasksFromMultipleProject() || [];
-    update();
+    updateTasks();
   }
 })
