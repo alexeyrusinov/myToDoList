@@ -173,38 +173,43 @@ function createElementWithClass(tagName, classNames = []) {
   return element;
 }
 
+
+
 function updateTasks() {
   const whereElenemt = document.querySelector('.js-todo-list-4');
   whereElenemt.innerHTML = ''; // обннуляем перед апдейтом
 
-  toDoStorage.forEach(todoItem => {
-    let todoItemDiv = createElementWithClass('tr', ['js-todo-row-with-check'])
+  let createTd = (className, content) => {
+    const td = createElementWithClass('td', [className]);
+    td.innerHTML = content;
+    return td;
+  };
 
-    let firstTd = createElementWithClass('td', ['example'])
+  toDoStorage.forEach(todoItem => {
+    let todoItemRow = createElementWithClass('tr', ['js-todo-row-with-check'])
+
+    let checkboxTd = createTd('example', '');
+    // checkboxTd.textContent = '';
     let checkbox = createElementWithClass('input', ['js-checkbox'])
     checkbox.type = "checkbox";
     checkbox.dataset.firstindex = todoItem.id;
     checkbox.defaultChecked = todoItem.isDone;
+    checkboxTd.appendChild(checkbox);
+    todoItemRow.appendChild(checkboxTd);
 
-    firstTd.appendChild(checkbox);
-    todoItemDiv.appendChild(firstTd)
+    todoItemRow.appendChild(createTd('js-nameDiv', todoItem.toDoName))
+    todoItemRow.appendChild(createTd('js-date-output', todoItem.date.split('-').reverse().join('-')))
 
-    let secondTd = createElementWithClass('td', ['js-nameDiv']);
-    secondTd.innerHTML = todoItem.toDoName;
-    todoItemDiv.appendChild(secondTd)
 
-    let thirdTd = createElementWithClass('td', ['js-date-output']);
-    thirdTd.innerHTML = todoItem.date.split('-').reverse().join('-');
-    todoItemDiv.appendChild(thirdTd)
+    let deleteButtonTd = createTd('example', '');
+    // deleteButtonTd.textContent = '';
+    let deleteButton = createElementWithClass('button', ['remove-button', 'js-delete-button'])
+    deleteButton.innerHTML = 'Delete';
+    deleteButton.dataset.index = todoItem.id;
+    deleteButtonTd.appendChild(deleteButton);
+    todoItemRow.appendChild(deleteButtonTd);
 
-    let fourthTd = createElementWithClass('td', ['example']);
-    let button = createElementWithClass('button', ['remove-button', 'js-delete-button'])
-    button.innerHTML = 'Delete';
-    button.dataset.index = todoItem.id;
-    fourthTd.appendChild(button);
-    todoItemDiv.appendChild(fourthTd)
-
-    whereElenemt.appendChild(todoItemDiv);
+    whereElenemt.appendChild(todoItemRow);
   });
 
   saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
