@@ -181,29 +181,20 @@ function updateTasks() {
     let todoItemDiv = createElementWithClass('tr', ['js-todo-row-with-check'])
 
     let firstTd = createElementWithClass('td', ['example'])
-
     let checkbox = createElementWithClass('input', ['js-checkbox'])
     checkbox.type = "checkbox";
     checkbox.dataset.firstindex = todoItem.id;
-    if (todoItem.isDone) {
-      checkbox.defaultChecked = true;
-    } else {
-      checkbox.defaultChecked = false;
-    }
+    checkbox.defaultChecked = todoItem.isDone;
 
     firstTd.appendChild(checkbox);
     todoItemDiv.appendChild(firstTd)
 
-    let secondTd = createElementWithClass('td', ['example']);
-    let nameDiv = createElementWithClass('div', ['js-nameDiv'])
-    nameDiv.innerHTML = todoItem.toDoName;
-    secondTd.appendChild(nameDiv);
+    let secondTd = createElementWithClass('td', ['js-nameDiv']);
+    secondTd.innerHTML = todoItem.toDoName;
     todoItemDiv.appendChild(secondTd)
 
-    let thirdTd = createElementWithClass('td', ['example']);
-    let dateDiv = createElementWithClass('div', ['js-date-output'])
-    dateDiv.innerHTML = todoItem.date.split('-').reverse().join('-');
-    thirdTd.appendChild(dateDiv);
+    let thirdTd = createElementWithClass('td', ['js-date-output']);
+    thirdTd.innerHTML = todoItem.date.split('-').reverse().join('-');
     todoItemDiv.appendChild(thirdTd)
 
     let fourthTd = createElementWithClass('td', ['example']);
