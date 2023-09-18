@@ -138,8 +138,7 @@ function getMaxid(array) {
 
 let uniqueNumber = getMaxid(toDoStorage);
 
-updateTasks(); // это включить  чтобы работало корректно убрано для примера ------------------------------------------------------------------
-
+updateTasks();
 
 function addTaskToStoradge() {
   let nameElemet = document.querySelector('.js-fourth-practice-input').value;
@@ -200,6 +199,12 @@ function updateTasks() {
     todoItemRow.appendChild(createTd('js-nameDiv', todoItem.toDoName))
     todoItemRow.appendChild(createTd('js-date-output', todoItem.date.split('-').reverse().join('-')))
 
+
+    if (todoItem.isDone) {
+      todoItemRow.classList.add('done-tusk');
+    } else {
+      todoItemRow.classList.remove('done-tusk');
+    }
 
     let deleteButtonTd = createTd('example', '');
     // deleteButtonTd.textContent = '';
@@ -285,6 +290,12 @@ document.querySelector('.js-todo-row')
     addToDoItemEnter(event);
   });
 
+  document.querySelector('.theadRight')
+  .addEventListener('click', (event) => {
+    console.log(event.target)
+    toDoStorage.reverse();
+    updateTasks();
+  });
 
 function moveElementInArray(arr, oldIndex, newIndex) {
   if (newIndex >= arr.length) {
@@ -326,21 +337,37 @@ function move(index, flag) {
 
 allCheckbox = document.querySelector('.js-todo-list-4')
   .addEventListener('change', (event) => {
+
     console.log(event.target.dataset['firstindex']);
     let objectUniqNumber = Number(event.target.dataset['firstindex']);
     let index = findIndexInArray(toDoStorage, objectUniqNumber);
 
     if (event.target.checked) {
       toDoStorage[index].isDone = true; //ссылаемся на один обьект измененния затрагивают и multipleTodoLists
+      // event.target.parentElement.parentElement.children[1].classList.add('done-tusk');
+      // event.target.closest('tr').classList.add('done-tusk');
+      // event.target.closest('tr').querySelector('.js-nameDiv').classList.add('done-tusk');
+      // Найдите ближайший элемент <tr>.
+      
+
+
       saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
       move(index);
       updateTasks();
+      // event.target.parentElement.parentElement.querySelector('.js-nameDiv').classList.add('done-tusk');
 
     } else {
       toDoStorage[index].isDone = false; //ссылаемся на один обьект измененния затрагивают и multipleTodoLists
+      // event.target.parentElement.parentElement.children[1].classList.remove('done-tusk');
+      // event.target.closest('tr').querySelector('.js-nameDiv').classList.remove('done-tusk');
+            // Найдите ближайший элемент <tr>.
+      // event.target.parentElement.parentElement.querySelector('.js-nameDiv').classList.remove('done-tusk');
+      // console.log(event.target.parentElement.parentElement.querySelector('.js-nameDiv'));
+      // event.target.closest('tr').classList.remove('done-tusk');
       saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
       move(index, true);
       updateTasks();
+      // event.target.parentElement.parentElement.querySelector('.js-nameDiv').classList.remove('done-tusk');
     };
   });
 
