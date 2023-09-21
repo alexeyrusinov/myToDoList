@@ -299,6 +299,21 @@ document.querySelector('.theadRight')
     updateTasks();
   });
 
+let sortDate = document.querySelector('.theadRight')
+
+function swapDateDirection() {
+  sortDate.innerHTML = ''
+
+  if (sortingDirection) {
+    sortDate.innerHTML = 'Дата &#11015;'
+  } else {
+    sortDate.innerHTML = 'Дата &#11014;'
+  }
+}
+
+swapDateDirection();
+
+// узнать почему срабатывает через раз сортировка по дате и стрела тоже через раз поворачивается и сбрасывается всё после обновления страницы
 
 function getSelectedProject() {
   const id = multipleTodoLists.findIndex(element => element.selected === true);
@@ -307,10 +322,12 @@ function getSelectedProject() {
   }
 }
 
+
 function swapElementsByCriterion(array, criterion) {
   // Разделяем массив на два: элементы, удовлетворяющие критерию, и не удовлетворяющие
   const matching = array.filter((item) => criterion(item));
 
+  // Переключаем направление сортировки
   if (sortingDirection) {
     matching.sort((a, b) => new Date(a.date) - new Date(b.date));
     sortingDirection = false;
@@ -320,12 +337,16 @@ function swapElementsByCriterion(array, criterion) {
   }
 
   const nonMatching = array.filter((item) => !criterion(item));
-  // Объединяем их
-  toDoStorage = matching.concat(nonMatching)
 
-  multipleTodoLists[getSelectedProject()].tasks = toDoStorage
+  // Объединяем их обратно в исходный массив
+  toDoStorage = matching.concat(nonMatching);
 
-  saveDataToLocalStorage('sortingDirection', sortingDirection)
+  // Обновляем данные в хранилище
+  multipleTodoLists[getSelectedProject()].tasks = toDoStorage;
+
+  // Сохраняем направление сортировки в локальном хранилище
+  saveDataToLocalStorage('sortingDirection', sortingDirection);
+  swapDateDirection();
 }
 
 
