@@ -7,6 +7,8 @@ let toDoStorage = getArrayTasksFromMultipleProject() || [];
 let allCheckbox;
 let counterProjects = getMaxid(multipleTodoLists);
 const multipleProjectButtons = document.getElementsByClassName('js-multiple-list');
+let sortingDirection = JSON.parse(localStorage.getItem('sortingDirection'));
+
 
 function saveDataToLocalStorage(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
@@ -151,13 +153,14 @@ function addTaskToStoradge() {
     isDone: '',
   };
 
-  if (items.toDoName) {
+  if (items.toDoName && items.date) {
     toDoStorage.push(items);
     multipleTodoLists[projectIndex]['tasks'] = toDoStorage
     let objectUniqNumber = items.id;
     let index = findIndexInArray(toDoStorage, objectUniqNumber);
     move(index, true);
   } else {
+    alert('необходимо указывать и мя и дату для задачи')
     return;
   }
 
@@ -290,12 +293,41 @@ document.querySelector('.js-todo-row')
     addToDoItemEnter(event);
   });
 
-  document.querySelector('.theadRight')
+document.querySelector('.theadRight')
   .addEventListener('click', (event) => {
-    console.log(event.target)
-    toDoStorage.reverse();
+    swapElementsByCriterion(toDoStorage, (item) => item.isDone == '' || item.isDone == false);
     updateTasks();
   });
+
+
+function getSelectedProject() {
+  const id = multipleTodoLists.findIndex(element => element.selected === true);
+  if (id !== -1) {
+    return id
+  }
+}
+
+function swapElementsByCriterion(array, criterion) {
+  // Разделяем массив на два: элементы, удовлетворяющие критерию, и не удовлетворяющие
+  const matching = array.filter((item) => criterion(item));
+
+  if (sortingDirection) {
+    matching.sort((a, b) => new Date(a.date) - new Date(b.date));
+    sortingDirection = false;
+  } else {
+    matching.sort((a, b) => new Date(b.date) - new Date(a.date));
+    sortingDirection = true;
+  }
+
+  const nonMatching = array.filter((item) => !criterion(item));
+  // Объединяем их
+  toDoStorage = matching.concat(nonMatching)
+
+  multipleTodoLists[getSelectedProject()].tasks = toDoStorage
+
+  saveDataToLocalStorage('sortingDirection', sortingDirection)
+}
+
 
 function moveElementInArray(arr, oldIndex, newIndex) {
   if (newIndex >= arr.length) {
@@ -344,30 +376,15 @@ allCheckbox = document.querySelector('.js-todo-list-4')
 
     if (event.target.checked) {
       toDoStorage[index].isDone = true; //ссылаемся на один обьект измененния затрагивают и multipleTodoLists
-      // event.target.parentElement.parentElement.children[1].classList.add('done-tusk');
-      // event.target.closest('tr').classList.add('done-tusk');
-      // event.target.closest('tr').querySelector('.js-nameDiv').classList.add('done-tusk');
-      // Найдите ближайший элемент <tr>.
-      
-
-
       saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
       move(index);
       updateTasks();
-      // event.target.parentElement.parentElement.querySelector('.js-nameDiv').classList.add('done-tusk');
 
     } else {
       toDoStorage[index].isDone = false; //ссылаемся на один обьект измененния затрагивают и multipleTodoLists
-      // event.target.parentElement.parentElement.children[1].classList.remove('done-tusk');
-      // event.target.closest('tr').querySelector('.js-nameDiv').classList.remove('done-tusk');
-            // Найдите ближайший элемент <tr>.
-      // event.target.parentElement.parentElement.querySelector('.js-nameDiv').classList.remove('done-tusk');
-      // console.log(event.target.parentElement.parentElement.querySelector('.js-nameDiv'));
-      // event.target.closest('tr').classList.remove('done-tusk');
       saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
       move(index, true);
       updateTasks();
-      // event.target.parentElement.parentElement.querySelector('.js-nameDiv').classList.remove('done-tusk');
     };
   });
 
