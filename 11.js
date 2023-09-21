@@ -7,7 +7,7 @@ let toDoStorage = getArrayTasksFromMultipleProject() || [];
 let allCheckbox;
 let counterProjects = getMaxid(multipleTodoLists);
 const multipleProjectButtons = document.getElementsByClassName('js-multiple-list');
-let sortingDirection = JSON.parse(localStorage.getItem('sortingDirection'));
+let sortingDirection = multipleTodoLists[getSelectedProject()].dateSortingDirection;
 
 
 function saveDataToLocalStorage(key, data) {
@@ -19,7 +19,7 @@ function addZeroProject() {
   inboxButton.dataset.id = 0; // при каждой перезагрузке добавляю на страницу
   let zeroTask = multipleTodoLists.findIndex(object => object.prime === true)
   if (zeroTask == -1) {
-    multipleTodoLists.push({ prime: true, tasks: [], id: 0, selected: true, })
+    multipleTodoLists.push({ prime: true, tasks: [], id: 0, selected: true, dateSortingDirection: '',})
     saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
     inboxButton.dataset.id = 0;
     counterProjects += 1;
@@ -151,6 +151,7 @@ function addTaskToStoradge() {
     date: dateElement,
     id: uniqueNumber += 1,
     isDone: '',
+    dateSortingDirection: '',
   };
 
   if (items.toDoName && items.date) {
@@ -301,8 +302,10 @@ document.querySelector('.theadRight')
 
 let sortDate = document.querySelector('.theadRight')
 
-function swapDateDirection() {
+
+function datePointer() {
   sortDate.innerHTML = ''
+  const sortingDirection = multipleTodoLists[getSelectedProject()].dateSortingDirection;
 
   if (sortingDirection) {
     sortDate.innerHTML = 'Дата &#11015;'
@@ -311,9 +314,8 @@ function swapDateDirection() {
   }
 }
 
-swapDateDirection();
+datePointer();
 
-// узнать почему срабатывает через раз сортировка по дате и стрела тоже через раз поворачивается и сбрасывается всё после обновления страницы
 
 function getSelectedProject() {
   const id = multipleTodoLists.findIndex(element => element.selected === true);
@@ -324,16 +326,23 @@ function getSelectedProject() {
 
 
 function swapElementsByCriterion(array, criterion) {
+  const idSelectedProject = getSelectedProject()
+  sortDate.innerHTML = ''
+
   // Разделяем массив на два: элементы, удовлетворяющие критерию, и не удовлетворяющие
   const matching = array.filter((item) => criterion(item));
 
   // Переключаем направление сортировки
   if (sortingDirection) {
     matching.sort((a, b) => new Date(a.date) - new Date(b.date));
+
     sortingDirection = false;
+    multipleTodoLists[idSelectedProject].dateSortingDirection = false;
   } else {
     matching.sort((a, b) => new Date(b.date) - new Date(a.date));
+
     sortingDirection = true;
+    multipleTodoLists[idSelectedProject].dateSortingDirection = true;
   }
 
   const nonMatching = array.filter((item) => !criterion(item));
@@ -342,11 +351,9 @@ function swapElementsByCriterion(array, criterion) {
   toDoStorage = matching.concat(nonMatching);
 
   // Обновляем данные в хранилище
-  multipleTodoLists[getSelectedProject()].tasks = toDoStorage;
+  multipleTodoLists[idSelectedProject].tasks = toDoStorage;
 
-  // Сохраняем направление сортировки в локальном хранилище
-  saveDataToLocalStorage('sortingDirection', sortingDirection);
-  swapDateDirection();
+  datePointer()
 }
 
 
@@ -483,6 +490,8 @@ wrapperAllMultipleButtons.addEventListener('click', (event) => {
     toDoStorage = getArrayTasksFromMultipleProject() || [];
     updateTasks();
   }
+  // swapDateDirection();
+  datePointer();
 })
 
 
