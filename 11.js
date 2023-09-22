@@ -7,6 +7,8 @@ let toDoStorage = getArrayTasksFromMultipleProject() || [];
 let allCheckbox;
 let counterProjects = getMaxid(multipleTodoLists);
 const multipleProjectButtons = document.getElementsByClassName('js-multiple-list');
+let sortingDirection = multipleTodoLists[getSelectedProject()].dateSortingDirection;
+
 
 function saveDataToLocalStorage(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
@@ -17,7 +19,7 @@ function addZeroProject() {
   inboxButton.dataset.id = 0; // при каждой перезагрузке добавляю на страницу
   let zeroTask = multipleTodoLists.findIndex(object => object.prime === true)
   if (zeroTask == -1) {
-    multipleTodoLists.push({ prime: true, tasks: [], id: 0, selected: true, })
+    multipleTodoLists.push({ prime: true, tasks: [], id: 0, selected: true, dateSortingDirection: '',})
     saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
     inboxButton.dataset.id = 0;
     counterProjects += 1;
@@ -140,7 +142,6 @@ let uniqueNumber = getMaxid(toDoStorage);
 
 updateTasks();
 
-
 function addTaskToStoradge() {
   let nameElemet = document.querySelector('.js-fourth-practice-input').value;
   let dateElement = document.getElementById('js-date').value;
@@ -150,15 +151,17 @@ function addTaskToStoradge() {
     date: dateElement,
     id: uniqueNumber += 1,
     isDone: '',
+    dateSortingDirection: '',
   };
 
-  if (items.toDoName) {
+  if (items.toDoName && items.date) {
     toDoStorage.push(items);
     multipleTodoLists[projectIndex]['tasks'] = toDoStorage
     let objectUniqNumber = items.id;
     let index = findIndexInArray(toDoStorage, objectUniqNumber);
     move(index, true);
   } else {
+    alert('необходимо указывать и мя и дату для задачи')
     return;
   }
 
@@ -173,40 +176,49 @@ function createElementWithClass(tagName, classNames = []) {
   return element;
 }
 
+
+
 function updateTasks() {
   const whereElenemt = document.querySelector('.js-todo-list-4');
-  whereElenemt.innerHTML = '';
+  whereElenemt.innerHTML = ''; // обннуляем перед апдейтом
+
+  let createTd = (className, content) => {
+    const td = createElementWithClass('td', [className]);
+    td.innerHTML = content;
+    return td;
+  };
 
   toDoStorage.forEach(todoItem => {
-    let todoItemDiv = createElementWithClass('div', ['js-todo-row-with-check'])
-    todoItemDiv.dataset.firstindex = todoItem.id;
+    let todoItemRow = createElementWithClass('tr', ['js-todo-row-with-check'])
 
-
+    let checkboxTd = createTd('example', '');
+    // checkboxTd.textContent = '';
     let checkbox = createElementWithClass('input', ['js-checkbox'])
     checkbox.type = "checkbox";
+    checkbox.dataset.firstindex = todoItem.id;
+    checkbox.defaultChecked = todoItem.isDone;
+    checkboxTd.appendChild(checkbox);
+    todoItemRow.appendChild(checkboxTd);
+
+    todoItemRow.appendChild(createTd('js-nameDiv', todoItem.toDoName))
+    todoItemRow.appendChild(createTd('js-date-output', todoItem.date.split('-').reverse().join('-')))
+
+
     if (todoItem.isDone) {
-      checkbox.defaultChecked = true;
+      todoItemRow.classList.add('done-tusk');
     } else {
-      checkbox.defaultChecked = false;
+      todoItemRow.classList.remove('done-tusk');
     }
 
-    todoItemDiv.appendChild(checkbox);
+    let deleteButtonTd = createTd('example', '');
+    // deleteButtonTd.textContent = '';
+    let deleteButton = createElementWithClass('button', ['remove-button', 'js-delete-button'])
+    deleteButton.innerHTML = 'Delete';
+    deleteButton.dataset.index = todoItem.id;
+    deleteButtonTd.appendChild(deleteButton);
+    todoItemRow.appendChild(deleteButtonTd);
 
-    let nameDiv = createElementWithClass('div', ['js-nameDiv'])
-    nameDiv.innerHTML = todoItem.toDoName;
-
-    todoItemDiv.appendChild(nameDiv);
-
-    let dateDiv = createElementWithClass('div', ['js-date-output'])
-    dateDiv.innerHTML = todoItem.date.split('-').reverse().join('-');
-    todoItemDiv.appendChild(dateDiv);
-
-    let button = createElementWithClass('button', ['remove-button', 'js-delete-button'])
-    button.innerHTML = 'Delete';
-    button.dataset.index = todoItem.id;
-
-    todoItemDiv.appendChild(button);
-    whereElenemt.appendChild(todoItemDiv);
+    whereElenemt.appendChild(todoItemRow);
   });
 
   saveDataToLocalStorage('multipleTodoLists', multipleTodoLists)
@@ -282,6 +294,68 @@ document.querySelector('.js-todo-row')
     addToDoItemEnter(event);
   });
 
+document.querySelector('.theadRight')
+  .addEventListener('click', (event) => {
+    swapElementsByCriterion(toDoStorage, (item) => item.isDone == '' || item.isDone == false);
+    updateTasks();
+  });
+
+let sortDate = document.querySelector('.theadRight')
+
+
+function datePointer() {
+  sortDate.innerHTML = ''
+  const sortingDirection = multipleTodoLists[getSelectedProject()].dateSortingDirection;
+
+  if (sortingDirection) {
+    sortDate.innerHTML = 'Дата &#11015;'
+  } else {
+    sortDate.innerHTML = 'Дата &#11014;'
+  }
+}
+
+datePointer();
+
+
+function getSelectedProject() {
+  const id = multipleTodoLists.findIndex(element => element.selected === true);
+  if (id !== -1) {
+    return id
+  }
+}
+
+
+function swapElementsByCriterion(array, criterion) {
+  const idSelectedProject = getSelectedProject()
+  sortDate.innerHTML = ''
+
+  // Разделяем массив на два: элементы, удовлетворяющие критерию, и не удовлетворяющие
+  const matching = array.filter((item) => criterion(item));
+
+  // Переключаем направление сортировки
+  if (sortingDirection) {
+    matching.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    sortingDirection = false;
+    multipleTodoLists[idSelectedProject].dateSortingDirection = false;
+  } else {
+    matching.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    sortingDirection = true;
+    multipleTodoLists[idSelectedProject].dateSortingDirection = true;
+  }
+
+  const nonMatching = array.filter((item) => !criterion(item));
+
+  // Объединяем их обратно в исходный массив
+  toDoStorage = matching.concat(nonMatching);
+
+  // Обновляем данные в хранилище
+  multipleTodoLists[idSelectedProject].tasks = toDoStorage;
+
+  datePointer()
+}
+
 
 function moveElementInArray(arr, oldIndex, newIndex) {
   if (newIndex >= arr.length) {
@@ -323,7 +397,9 @@ function move(index, flag) {
 
 allCheckbox = document.querySelector('.js-todo-list-4')
   .addEventListener('change', (event) => {
-    let objectUniqNumber = Number(event.target.parentElement.dataset['firstindex']);
+
+    console.log(event.target.dataset['firstindex']);
+    let objectUniqNumber = Number(event.target.dataset['firstindex']);
     let index = findIndexInArray(toDoStorage, objectUniqNumber);
 
     if (event.target.checked) {
@@ -414,4 +490,8 @@ wrapperAllMultipleButtons.addEventListener('click', (event) => {
     toDoStorage = getArrayTasksFromMultipleProject() || [];
     updateTasks();
   }
+  // swapDateDirection();
+  datePointer();
 })
+
+

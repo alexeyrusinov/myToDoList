@@ -15,7 +15,7 @@ body {
   margin-bottom: 10px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-  grid-auto-flow:row;
+  grid-auto-flow: row;
   column-gap: 5px;
   margin-right: 0;
   grid-row: 2 / span 2;
@@ -39,6 +39,7 @@ body {
   background-color: red;
   width: 30px;
 }
+
 .projectHide {
   display: none;
 }
@@ -64,14 +65,14 @@ body {
   /* margin-bottom: 10px; */
 }
 
-.js-todo-row-with-check {
-  display: grid;
+/* .js-todo-row-with-check { */
+  /* display: grid;
   column-gap: 10px;
   grid-template-columns: 20px 300px 120px 100px;
   align-items: center;
   overflow-wrap: break-word;
-  margin-bottom: 10px;
-}
+  margin-bottom: 10px; */
+/* } */
 
 .todo-input-row {
   margin-bottom: 10px;
@@ -84,11 +85,11 @@ body {
 
 .add-task-button,
 .remove-button {
-    color: white;
-    border: none;
-    font-size: 15px;
-    padding: 10px 15px;
-    cursor: pointer;
+  color: white;
+  border: none;
+  font-size: 15px;
+  /* padding: 10px 15px; */
+  cursor: pointer;
 }
 
 .add-task-button {
@@ -97,7 +98,13 @@ body {
 
 .remove-button {
   background-color: darkred;
+  margin: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 97px;
+
 }
+
 
 .js-todo-list-4 {
   font-size: 16px;
@@ -106,4 +113,33 @@ body {
 .done-tusk {
   text-decoration: line-through;
   color: rgba(128, 128, 128, 0.496);
+}
+
+table {
+  /* margin: 0; */
+  /* padding: 0; */
+  table-layout: fixed;
+  width: 572px;
+}
+
+
+
+.theadLeft {
+  width: 100px;
+  text-align: right;
+}
+
+.theadRight {
+  width: 200px;
+
+}
+
+
+.js-todo-row-with-check {
+  display: grid;
+  column-gap: 10px;
+  grid-template-columns: 20px 300px 120px 100px;
+  align-items: center;
+  overflow-wrap: break-word;
+  margin-bottom: 10px;
 }
